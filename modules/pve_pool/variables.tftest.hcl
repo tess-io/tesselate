@@ -1,10 +1,17 @@
+mock_provider "proxmox" { }
+
 variables {
   name     = "test-pool"
   vms_name = "test-vm"
-  size  = 1
-  disks = [
-    { storage = "test-storage", size = 1 }
-  ]
+  node     = "test-node"
+  size     = 1
+
+  disks = {
+    root      = { storage = "test", size = 4, },
+    cloudinit = { storage = "test" },
+    other     = [ ],
+  }
+  
   network = {
     cidr = "192.168.0.0/24",
     dns  = "8.8.8.8",

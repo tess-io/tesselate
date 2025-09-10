@@ -52,7 +52,7 @@ variable "size" {
 
 variable "resources" {
   description = "Allocated to VMs physical resources"
-  type        = object({
+  type = object({
     cpu    = number,
     memory = number, 
     hugepg = bool,
@@ -62,18 +62,17 @@ variable "resources" {
 
 variable "base" {
   description = "Information about base cloud image for VMs, which will be downloaded from corresponding URL"
-  type        = object({
+  type = object({
     os      = string,
     version = string,
-    bios    = string,
     arch    = string,
   })
-  default = { os = "ubuntu", version = "24.04-LTS", bios = "uefi", arch = "x86_64" }
+  default = { os = "alpine", version = "3.21.0", arch = "x86_64" }
 }
 
 variable "network" {
   description = "Network configuration information"
-  type        = object({
+  type = object({
     cidr = string,
     dns  = string,
     acls = list(object({
@@ -87,10 +86,19 @@ variable "network" {
 
 variable "disks" {
   description = "Disks configuration information"
-  type        = list(object({
-    storage = string,
-    size    = number,
-  }))
+  type = object({
+    root = object({
+      storage = string,
+      size    = number,
+    }),
+    cloudinit = object({
+      storage = string,
+    }),
+    other = list(object({
+      storage = string,
+      size    = number,
+    }))
+  })
   nullable  = false
 }
 
