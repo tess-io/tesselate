@@ -1,0 +1,13 @@
+#cloud-config
+
+user: ${default_user}
+%{ if default_pass_hash != null ~}
+password: ${default_pass_hash}
+%{ endif ~}
+
+%{ if ssh_auth_keys != null ~}
+ssh_authorized_keys:
+%{ for key in ssh_auth_keys ~}
+- ${key}
+%{ endfor ~}
+%{ endif ~}

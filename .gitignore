@@ -44,5 +44,13 @@ terraform.rc
 # Uncomment the line below if you want to ignore planout files.
 # planout
 
+# Local ignored files
 .ignore/*
+!.ignore/.gitkeep
+
+# direnv files
+.direnv/
+
+# Root test file
+main_test.tf
 
