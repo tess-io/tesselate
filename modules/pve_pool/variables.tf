@@ -10,6 +10,37 @@ variable "vms_name" {
   nullable    = false
 }
 
+variable "start_id" {
+  description = "First VM in pool identifier"
+  type        = number
+  nullable    = false
+
+  validation {
+    condition     = var.start_id > 0
+    error_message = "VM id must be greater than 0"
+  }
+}
+
+variable "auth" {
+  description = "VMs auth credential"
+  type = object({
+    user      = string,
+    pass      = string,
+    ssh_keys  = list(string),
+  })
+  nullable = false
+
+  validation {
+    condition     = var.auth.pass != null || var.auth.ssh_keys != null
+    error_message = "One of the 'pass' or 'ssh_keys' must be specified"
+  }
+
+  validation {
+    condition     = var.auth.pass == null || (startswith(var.auth.pass, "$5$") && length(var.auth.pass) == 63)
+    error_message = "Use hash ('openssl passwd -5' command) instead of plain text"
+  }
+}
+
 variable "description" {
   description = "VMs pool description"
   type        = string
@@ -73,12 +104,15 @@ variable "base" {
 variable "network" {
   description = "Network configuration information"
   type = object({
-    cidr = string,
-    dns  = string,
+    cidr          = string,
+    dns           = list(string),
+    searchdomains = list(string)
+
     acls = list(object({
       cidr   = string,
       ports  = string,
       policy = string,
+      proto  = string,
     }))
   })
   nullable = false

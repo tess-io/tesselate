@@ -1,0 +1,24 @@
+#cloud-config
+
+%{ if os == "alpine" ~}
+write_files:
+- path: /etc/resolv.conf
+  encoding: text/plain
+  content: |
+    %{~ for nameserver in nameservers ~}
+    nameserver ${nameserver}
+    %{~ endfor ~}
+    search %{ for searchdomain in searchdomains ~} ${searchdomain} %{~ endfor }
+    domain ${domain}
+
+%{ if agent_on ~}
+runcmd:
+- rc-update add qemu-guest-agent
+- rc-service qemu-guest-agent start
+%{ endif ~}
+%{ endif ~}
+
+%{ if agent_on ~}
+packages:
+- qemu-guest-agent
+%{ endif ~}

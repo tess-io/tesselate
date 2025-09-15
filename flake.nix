@@ -28,6 +28,11 @@
 
         # vault
         vault 
+
+        # help tools
+        ipcalc
+        openssl
+        jq
       ];
     };
   };
