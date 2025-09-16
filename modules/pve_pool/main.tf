@@ -161,21 +161,21 @@ resource "proxmox_virtual_environment_vm" "vm" {
     cache        = "none"
   }
   
-  # dynamic "disk" {
-  #   for_each = var.disks.other
+  dynamic "disk" {
+    for_each = var.disks.other
 
-  #   content {
-  #     interface    = "scsi${disk.key}"
-  #     size         = disk.value.size
-  #     datastore_id = disk.value.storage
-  #     iothread     = false
-  #     discard      = "ignore"
-  #     replicate    = false
-  #     ssd          = false
-  #     backup       = false
-  #     cache        = "none"  
-  #   }
-  # }
+    content {
+      interface    = "scsi${disk.key + 1}"
+      size         = disk.value.size
+      datastore_id = disk.value.storage
+      iothread     = false
+      discard      = "ignore"
+      replicate    = false
+      ssd          = false
+      backup       = false
+      cache        = "none"
+    }
+  }
 }
 
 resource "proxmox_virtual_environment_firewall_rules" "rules" {
