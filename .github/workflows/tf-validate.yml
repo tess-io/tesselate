@@ -22,7 +22,7 @@ jobs:
       uses: actions/checkout@v5
 
     - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
+      uses: hashicorp/setup-terraform@v3
 
     - name: Initialize module ${{ matrix.module }}
       run: terraform init
