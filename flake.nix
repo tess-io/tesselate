@@ -33,6 +33,9 @@
         ipcalc
         openssl
         jq
+
+        # github actions
+        act
       ];
     };
   };
