@@ -11,3 +11,5 @@ ssh_authorized_keys:
 - ${key}
 %{ endfor ~}
 %{ endif ~}
+
+fqdn: ${fqdn}

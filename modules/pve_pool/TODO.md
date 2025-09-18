@@ -3,5 +3,5 @@
 - [ ] Implement VNet and Zones support
 - [ ] Implement support of different operating systems:
   - [X] Alpine
-  - [ ] Ubuntu
+  - [X] Ubuntu
   - [ ] CentOS

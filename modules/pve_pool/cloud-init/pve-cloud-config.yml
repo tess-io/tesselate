@@ -18,6 +18,13 @@ runcmd:
 %{ endif ~}
 %{ endif ~}
 
+%{ if os == "ubuntu" ~}
+%{ if agent_on ~}
+runcmd:
+- systemctl enable --now qemu-guest-agent
+%{ endif ~}
+%{ endif ~}
+
 %{ if agent_on ~}
 packages:
 - qemu-guest-agent
