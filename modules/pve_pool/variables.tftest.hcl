@@ -20,9 +20,9 @@ variables {
   }
   
   network = {
-    cidr = "192.168.0.0/24",
-    dns  = [ ],
-    searchdomains = [ ]
+    cidr   = "192.168.0.0/24",
+    dns    = [ ],
+    domain = "domain.test",
     acls = [ { cidr = "192.168.0.0/24", ports = "22", policy = "accept", proto = "tcp", } ],
   }
 }

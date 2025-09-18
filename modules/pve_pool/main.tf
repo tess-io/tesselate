@@ -1,19 +1,24 @@
 locals {
   helpers = {
-    alpine = {
+    alpine = var.base.os == "alpine" ? {
       mm_version = "v${split(".", var.base.version)[0]}.${split(".", var.base.version)[1]}"
-    }
-    # ubuntu = {
-    #   arch_replace = {
-    #     x86_64  = "amd64",
-    #     aarch64 = "arm64",
-    #   }
-    # }
+    } : null
+    ubuntu = var.base.os == "ubuntu" ? {
+      arch_replace = {
+        x86_64  = "amd64",
+        aarch64 = "arm64",
+      }
+    } : null
   }
 
   urls = {
-    alpine = "https://dl-cdn.alpinelinux.org/alpine/${local.helpers.alpine.mm_version}/releases/cloud/generic_alpine-${var.base.version}-x86_64-uefi-cloudinit-r0.qcow2"
-    # ubuntu = "https://cloud-images.ubuntu.com/${var.base.version}/current/${var.base.version}-server-cloudimg-${local.helpers.ubuntu.arch_replace[var.base.arch]}.img"
+    alpine = var.base.os == "alpine" ? "https://dl-cdn.alpinelinux.org/alpine/${local.helpers.alpine.mm_version}/releases/cloud/generic_alpine-${var.base.version}-x86_64-uefi-cloudinit-r0.qcow2" : null
+    ubuntu = var.base.os == "ubuntu" ? "https://cloud-images.ubuntu.com/${var.base.version}/current/${var.base.version}-server-cloudimg-${local.helpers.ubuntu.arch_replace[var.base.arch]}.img" : null
+  }
+
+  img_version = {
+    alpine = var.base.os == "alpine" ? "v${var.base.version}" : null
+    ubuntu = var.base.os == "ubuntu" ? var.base.version : null
   }
 
   cidr = split("/", var.network.cidr)
@@ -31,6 +36,7 @@ data "cloudinit_config" "cloudinit_pve" {
     content_type = "text/cloud-config"
     filename     = "base-cloud-config.yml"
     content      = templatefile("${path.module}/cloud-init/base-cloud-config.yml", {
+      fqdn              = "${var.name}-${count.index}.${var.network.domain}"
       default_user      = var.auth.user,
       default_pass_hash = var.auth.pass,
       ssh_auth_keys     = var.auth.ssh_keys,
@@ -43,7 +49,7 @@ data "cloudinit_config" "cloudinit_pve" {
     content      = templatefile("${path.module}/cloud-init/pve-cloud-config.yml", {
       os            = var.base.os,
       nameservers   = var.network.dns,
-      searchdomains = var.network.searchdomains,
+      searchdomains = [ var.network.domain ],
       domain        = "${var.name}-${count.index}",
       agent_on      = var.agent_on
     })
@@ -69,7 +75,7 @@ resource "proxmox_virtual_environment_download_file" "cloudinit_img" {
   node_name    = var.node
 
   url       = local.urls[var.base.os]
-  file_name = "${var.base.os}-v${var.base.version}-${var.base.arch}.qcow2"
+  file_name = "${var.base.os}-${local.img_version[var.base.os]}-${var.base.arch}.qcow2"
 }
 
 resource "proxmox_virtual_environment_pool" "pool" {
@@ -79,7 +85,7 @@ resource "proxmox_virtual_environment_pool" "pool" {
 
 resource "proxmox_virtual_environment_cluster_firewall_security_group" "sc" {
   name    = var.name
-  comment = "Custom traeffic rules"
+  comment = "Custom traffic filtering rules for a pool ${var.name}"
 
   dynamic "rule" {
     for_each = var.network.acls 
@@ -116,6 +122,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
     limit        = 4
     cores        = var.resources.cpu
     architecture = var.base.arch
+    type         = "x86-64-v3"
   }
 
   memory {
@@ -135,9 +142,14 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
     ip_config {
       ipv4 {
-        address = "${cidrhost(var.network.cidr, count.index + 2)}/${local.mask_part}"
+        address = "${cidrhost(var.network.cidr, count.index + var.start_id)}/${local.mask_part}"
         gateway = cidrhost(var.network.cidr, 1)
       }
+    }
+
+    dns {
+      servers = var.network.dns
+      domain  = "${var.vms_name}-${count.index}"
     }
 
     user_data_file_id = proxmox_virtual_environment_file.cloudinit_pve[count.index].id

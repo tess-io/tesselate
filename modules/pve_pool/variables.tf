@@ -24,9 +24,9 @@ variable "start_id" {
 variable "auth" {
   description = "VMs auth credential"
   type = object({
-    user      = string,
-    pass      = string,
-    ssh_keys  = list(string),
+    user      = string
+    pass      = string
+    ssh_keys  = list(string)
   })
   nullable = false
 
@@ -84,9 +84,9 @@ variable "size" {
 variable "resources" {
   description = "Allocated to VMs physical resources"
   type = object({
-    cpu    = number,
-    memory = number, 
-    hugepg = bool,
+    cpu    = number
+    memory = number
+    hugepg = bool
   })
   default = { cpu = 4, memory = 4, hugepg = false }
 }
@@ -94,9 +94,9 @@ variable "resources" {
 variable "base" {
   description = "Information about base cloud image for VMs, which will be downloaded from corresponding URL"
   type = object({
-    os      = string,
-    version = string,
-    arch    = string,
+    os      = string
+    version = string
+    arch    = string
   })
   default = { os = "alpine", version = "3.21.0", arch = "x86_64" }
 }
@@ -104,15 +104,15 @@ variable "base" {
 variable "network" {
   description = "Network configuration information"
   type = object({
-    cidr          = string,
-    dns           = list(string),
-    searchdomains = list(string)
+    cidr          = string
+    dns           = list(string)
+    domain        = string
 
     acls = list(object({
-      cidr   = string,
-      ports  = string,
-      policy = string,
-      proto  = string,
+      cidr   = string
+      ports  = string
+      policy = string
+      proto  = string
     }))
   })
   nullable = false
@@ -122,15 +122,15 @@ variable "disks" {
   description = "Disks configuration information"
   type = object({
     root = object({
-      storage = string,
-      size    = number,
+      storage = string
+      size    = number
     }),
     cloudinit = object({
-      storage = string,
+      storage = string
     }),
     other = list(object({
-      storage = string,
-      size    = number,
+      storage = string
+      size    = number
     }))
   })
   nullable  = false
