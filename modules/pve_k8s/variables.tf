@@ -1,3 +1,33 @@
+variable "auth" {
+  description = "VMs auth credentials"
+  type = object({
+    user     = string,
+    pass     = string,
+    ssh_keys = list(string),
+  })
+  nullable = false
+
+  validation {
+    condition     = var.auth.pass != null || var.auth.ssh_keys != null
+    error_message = "One of the 'pass' or 'ssh_keys' must be specified"
+  }
+
+  validation {
+    condition     = var.auth.pass == null || (startswith(var.auth.pass, "$5$") && length(var.auth.pass) == 63)
+    error_message = "Use hash ('openssl passwd -5' command) instead of plain text"
+  }
+}
+
+variable "base" {
+  description = "Information about base cloud image for VMs, which will be downloaded from corresponding URL"
+  type = object({
+    os      = string
+    version = string
+    arch    = string
+  })
+  default = { os = "alpine", version = "3.21.0", arch = "x86_64" }
+}
+
 variable "network" {
   description = "Basic claster network settings"
   type = object({
