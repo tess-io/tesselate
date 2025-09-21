@@ -5,3 +5,5 @@
   - [X] Alpine
   - [X] Ubuntu
   - [ ] CentOS
+- [ ] Parametrize disk storages by type(HDD/SSD/SSDs1/SSDs2 and oth.)
+- [ ] Place VMs on different nodes when available
