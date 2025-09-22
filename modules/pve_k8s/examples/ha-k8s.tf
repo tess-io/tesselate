@@ -9,8 +9,9 @@ module "pve_k8s" {
 
   groups = {
     control = {
-      size      = 4
-      node_name = "control-node"
+      size       = 4
+      node_name  = "control-node"
+      is_control = true
 
       resources = {
         cpu    = 4

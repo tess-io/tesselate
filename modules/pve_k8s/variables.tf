@@ -1,3 +1,14 @@
+variable "start_id" {
+  description = "First VM in pool identifier"
+  type        = number
+  nullable    = false
+
+  validation {
+    condition     = var.start_id > 0
+    error_message = "VM id must be greater than 0"
+  }
+}
+
 variable "auth" {
   description = "VMs auth credentials"
   type = object({
@@ -56,8 +67,10 @@ variable "network" {
 variable "groups" {
   description = "Node group settings"
   type = map(object({
-    size      = number
-    node_name = string
+    size       = number
+    node_name  = string
+    is_control = optional(bool, false)
+    reserved   = optional(number, 5)
 
     resources = object({
       cpu    = number
