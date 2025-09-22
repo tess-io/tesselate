@@ -1,5 +1,15 @@
+mock_provider "proxmox" { }
+
 variables {
-  groups = { }
+  groups   = { }
+  start_id = 100
+
+  auth = {
+    user = "test-user"
+    pass = "$5$FLs86nDTeGMWRQJj$2L9rGoH2CEMvZfLSvoLa08UMGd8Lw09KXdgXXqEcyOC"
+
+    ssh_keys = null
+  }
 }
 
 run "validate_network_success" {

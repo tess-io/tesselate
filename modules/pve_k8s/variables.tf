@@ -1,3 +1,9 @@
+variable "node" {
+  description = "The name of the node that was used to create the VMs"
+  type        = string
+  default     = null
+}
+
 variable "start_id" {
   description = "First VM in pool identifier"
   type        = number

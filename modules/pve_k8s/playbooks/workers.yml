@@ -1,0 +1,6 @@
+- name: Simple local playbook
+  hosts: localhost
+  tasks:
+  - name: Print message
+    ansible.builtin.debug:
+      msg: This is simle message
