@@ -21,6 +21,12 @@ variable "start_id" {
   }
 }
 
+variable "use_agent" {
+  description = "When possible use information from the guest agent"
+  type        = bool
+  default     = false
+}
+
 variable "auth" {
   description = "VMs auth credential"
   type = object({
