@@ -24,6 +24,8 @@ locals {
   cidr = split("/", var.network.cidr)
   net_part = local.cidr[0]
   mask_part = local.cidr[1]
+
+  ipv4_addresses = [ for ind in range(var.size): cidrhost(var.network.cidr, ind + var.start_id) ]
 }
 
 data "cloudinit_config" "cloudinit_pve" {
@@ -142,7 +144,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
     ip_config {
       ipv4 {
-        address = "${cidrhost(var.network.cidr, count.index + var.start_id)}/${local.mask_part}"
+        address = "${local.ipv4_addresses[count.index]}/${local.mask_part}"
         gateway = cidrhost(var.network.cidr, 1)
       }
     }
