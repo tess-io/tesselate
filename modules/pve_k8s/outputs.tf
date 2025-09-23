@@ -14,3 +14,16 @@ output "ansible_logs" {
     }
   }
 }
+
+output "ansible_inventory" {
+  description = "A temporary ansible inventory file. Use it only for debugging purposes"
+
+  value = {
+    control = local.control_group_name == null ? null : ansible_playbook.control[0].temp_inventory_file
+
+    workers = {
+      for group in local.worker_groups:
+        group => ansible_playbook.workers[group].temp_inventory_file
+    }
+  }
+}

@@ -65,35 +65,24 @@ module "pve_pools" {
   }
 }
 
-resource "ansible_group" "k8s_groups" {
-  for_each = var.groups
-
-  name = each.key
-}
-
-resource "ansible_group" "k8s" {
-  name = "K8S"
-
-  children = [ for group in ansible_group.k8s_groups: group.name ]
-}
-
-resource "ansible_host" "k8s_hosts" {
-  for_each = local.all_hosts_to_group_map
-
-  name   = each.key
-  groups = [ ansible_group.k8s_groups[each.value].name ]
-}
-
 resource "ansible_playbook" "control" {
   count = local.control_group_name == null ? 0 : 1
   
-  playbook = "${path.module}/playbooks/control.yml"
+  playbook = "${path.root}/playbooks/k8s/control.yml"
   name     = local.ip_addresses[local.control_group_name][0]
+
+  extra_vars = {
+    ansible_user = var.auth.user
+  }
 }
 
 resource "ansible_playbook" "workers" {
   for_each = local.worker_groups
   
-  playbook = "${path.module}/playbooks/workers.yml"
+  playbook = "${path.root}/playbooks/k8s/workers.yml"
   name     = local.ip_addresses[each.value][0]
+
+  extra_vars = {
+    ansible_user = var.auth.user
+  }
 }

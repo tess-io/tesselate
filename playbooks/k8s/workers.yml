@@ -1,5 +1,5 @@
-- name: Simple local playbook
-  hosts: localhost
+- name: Simple worker playbook
+  hosts: all
   tasks:
   - name: Print message
     ansible.builtin.debug:

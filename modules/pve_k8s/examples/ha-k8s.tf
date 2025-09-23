@@ -67,3 +67,9 @@ output "ansible_logs" {
 
   value = module.pve_k8s.ansible_logs
 }
+
+output "ansible_inventory" {
+  description = "A temporary ansible inventory file"
+
+  value = module.pve_k8s.ansible_inventory
+}
