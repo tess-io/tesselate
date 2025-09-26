@@ -1,0 +1,14 @@
+#!/bin/openrc-run
+
+description = 'The core Kubernetes node agent'
+
+command = '/usr/bin/kubelet'
+pidfile = "/run/${RC_SVCNAME}.pid"
+command_background = true
+
+: ${output_log:=/var/log/${RC_SVCNAME}/stdout.log}
+: ${error_log:=/var/log/${RC_SVCNAME}/stderr.log}
+
+depend() {
+	need net
+}

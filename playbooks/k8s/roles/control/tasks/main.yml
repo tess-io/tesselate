@@ -1,0 +1,2 @@
+- name: Perform base preparing tasks
+  include_tasks: setup-{{ ansible_facts.distribution | lower }}.yml

@@ -1,0 +1,82 @@
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Disable cloud-init if enabled
+  ansible.builtin.file:
+    path: /etc/cloud/cloud-init.disabled
+    state: touch
+    mode: '0640'
+  when: ansible_facts.service['cloud-init'].state | default ('stopped') == 'started'
+
+- name: Installation base system software
+  ansible.builtin.include_tasks:
+    file: 'packages-{{ ansible_facts.distribution | lower }}.yml'
+  loop: '{{ install_packages }}'
+  vars:
+    category: '{{ item }}'
+
+- name: Create additional file systems
+  community.general.filesystem:
+    dev: '{{ item.dev }}'
+    state: present
+    fstype: '{{ item.fs }}'
+  loop: '{{ disks | default([]) }}'
+
+- name: Mount file systems
+  ansible.posix.mount:
+    src: '{{ item.dev }}'
+    path: '{{ item.mount }}'
+    fstype: '{{ item.fs }}'
+    boot: true
+    state: mounted
+  loop: '{{ disks | default([]) }}'
+
+- name: Copy make-shared script
+  ansible.builtin.template:
+    src: templates/make-shared.sh.j2
+    dest: /etc/local.d/make-shared.sh
+    mode: '0755'
+  vars:
+    paths: '{{ disks | default([]) | map(attribute="mount") | list + addition_paths }}'
+    addition_paths:
+      - /sys
+      - /sys/fs/cgroup
+  when: ansible_facts.distribution == 'Alpine'
+
+- name: Enable local service
+  ansible.builtin.service:
+    name: local
+    enabled: true
+    state: started
+  when: ansible_facts.distribution == 'Alpine'
+
+- name: Configure sysctl
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+
+- name: Create necessary directories
+  ansible.builtin.file:
+    path: '{{ data_dir }}/{{ item }}'
+    state: directory
+    mode: '0755'
+  loop: '{{ dirs }}'
+  vars:
+    data_dir: '{{ disks | default([]) | selectattr("role", "eq", "data") | map(attribute="mount") | first }}'
+    dirs:
+      - containerd
+      - kubelet
+
+- name: Setup symbolic links to data mount point
+  ansible.builtin.file:
+    src: '{{ data_dir }}/{{ item | basename }}'
+    path: '{{ item }}'
+    state: link
+    force: true
+  loop: '{{ dests }}'
+  vars:
+    dests:
+      - /var/lib/containerd
+      - /var/lib/kubelet
+    data_dir: '{{ disks | default([]) | selectattr("role", "eq", "data") | map(attribute="mount") | first }}'

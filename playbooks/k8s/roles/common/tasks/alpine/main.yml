@@ -1,0 +1,40 @@
+- name: Copy make-shared script
+  ansible.builtin.template:
+    src: templates/make-shared.sh.j2
+    dest: /etc/local.d/make-shared.sh
+    mode: '0755'
+  vars:
+    paths: '{{ disks | default([]) | map(attribute="mount") | list + addition_paths }}'
+    addition_paths:
+      - /sys
+      - /sys/fs/cgroup
+
+- name: Copy files
+  ansible.builtin.copy:
+    src: 'files/{{ item.src }}'
+    dest: '/opt/k8s/{{ k8s_version }}/{{ item.dest }}'
+    mode: '{{ item.mode | default("0644") }}'
+  loop:
+    - src: alpine/kubelet.initd
+      dest: kubelet/kubelet.initd
+      mode: "0755"
+    - src: alpine/kubelet.confd
+      dest: kubelet/kubelet.confd
+
+- name: Create OpenRC services links
+  ansible.builtin.file:
+    src: '/opt/k8s/{{ k8s_version }}/{{ item.src }}'
+    path: '/etc/{{ item.dest }}'
+    state: link
+    force: true
+  loop:
+    - src: kubelet/kubelet.initd
+      dest: init.d/kubelet
+    - src: kubelet/kubelet.confd
+      dest: conf.d/kubelet
+
+- name: Enable and startup local service
+  ansible.builtin.service:
+    name: local
+    enabled: true
+    state: started
