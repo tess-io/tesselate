@@ -19,6 +19,10 @@ locals {
 
   control_group_name = one([for name, group in var.groups: name if group.is_control])
   worker_groups = setsubtract(keys(var.groups), [local.control_group_name])
+
+  become_methods = {
+    alpine = "doas"
+  }
 }
 
 module "pve_pools" {
@@ -72,7 +76,8 @@ resource "ansible_playbook" "control" {
   name     = local.ip_addresses[local.control_group_name][0]
 
   extra_vars = {
-    ansible_user = var.auth.user
+    ansible_user          = var.auth.user
+    ansible_become_method = local.become_methods[var.base.os]
   }
 }
 
@@ -83,6 +88,7 @@ resource "ansible_playbook" "workers" {
   name     = local.ip_addresses[each.value][0]
 
   extra_vars = {
-    ansible_user = var.auth.user
+    ansible_user          = var.auth.user
+    ansible_become_method = local.become_methods[var.base.os]
   }
 }

@@ -12,25 +12,13 @@
 - name: Copy files
   ansible.builtin.copy:
     src: 'files/{{ item.src }}'
-    dest: '/opt/k8s/{{ k8s_version }}/{{ item.dest }}'
+    dest: '/etc/{{ item.dest }}'
     mode: '{{ item.mode | default("0644") }}'
   loop:
-    - src: alpine/kubelet.initd
-      dest: kubelet/kubelet.initd
-      mode: "0755"
-    - src: alpine/kubelet.confd
-      dest: kubelet/kubelet.confd
-
-- name: Create OpenRC services links
-  ansible.builtin.file:
-    src: '/opt/k8s/{{ k8s_version }}/{{ item.src }}'
-    path: '/etc/{{ item.dest }}'
-    state: link
-    force: true
-  loop:
-    - src: kubelet/kubelet.initd
+    - src: openrc/kubelet.initd
       dest: init.d/kubelet
-    - src: kubelet/kubelet.confd
+      mode: "0755"
+    - src: openrc/kubelet.confd
       dest: conf.d/kubelet
 
 - name: Enable and startup local service

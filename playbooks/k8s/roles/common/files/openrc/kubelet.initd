@@ -1,10 +1,11 @@
-#!/bin/openrc-run
+#!/sbin/openrc-run
 
-description = 'The core Kubernetes node agent'
+description='The core Kubernetes node agent'
+supervisor=supervise-daemon
 
-command = '/usr/bin/kubelet'
-pidfile = "/run/${RC_SVCNAME}.pid"
-command_background = true
+command='/usr/bin/kubelet'
+pidfile="/run/${RC_SVCNAME}.pid"
+command_background=true
 
 : ${output_log:=/var/log/${RC_SVCNAME}/stdout.log}
 : ${error_log:=/var/log/${RC_SVCNAME}/stderr.log}
