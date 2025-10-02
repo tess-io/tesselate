@@ -1,6 +1,22 @@
-- name: Simple control playbook
+- name: K8S common tasks
   hosts: all
-  tasks:
-  - name: Print message
-    ansible.builtin.debug:
-      msg: This is simple message
+  become: true
+  roles:
+    - role: common
+      vars:
+        version: stable
+        install_packages:
+          - net
+          - prof
+          - tools
+        disks:
+          - dev: /dev/sda
+            mount: /mnt/data
+            fs: ext4
+            role: data
+
+- name: K8S control node initialization play
+  hosts: all
+  become: true
+  roles:
+    - role: control

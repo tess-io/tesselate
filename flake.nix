@@ -23,8 +23,13 @@
 
         # ansible
         ansible
+        ansible-lint
         python313
         python313Packages.pip
+
+        # ansible community.crypto
+        python313Packages.cryptography
+        python313Packages.idna
 
         # vault
         vault 

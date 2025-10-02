@@ -1,0 +1,14 @@
+/var/log/kubelet/stdout.log /var/log/kubelet/stderr.log {
+	rotate 4
+	weekly
+
+	dateext
+	dateformat "_%Y-%m-%d"
+
+	compress
+
+	sharedscript
+	postrotate
+		:
+	endscript
+}

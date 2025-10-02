@@ -1,0 +1,9 @@
+- name: K8S cluster node initialization
+  ansible.builtin.include_tasks:
+    file: init.yml
+  when: state == 'init'
+
+- name: K8S cluster node join
+  ansible.builtin.include_tasks:
+    file: join.yml
+  when: state == 'join'

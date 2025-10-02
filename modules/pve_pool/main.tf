@@ -38,7 +38,7 @@ data "cloudinit_config" "cloudinit_pve" {
     content_type = "text/cloud-config"
     filename     = "base-cloud-config.yml"
     content      = templatefile("${path.module}/cloud-init/base-cloud-config.yml", {
-      fqdn              = "${var.name}-${count.index}.${var.network.domain}"
+      fqdn              = "${var.vms_name}-${count.index}.${var.network.domain}"
       default_user      = var.auth.user,
       default_pass_hash = var.auth.pass,
       ssh_auth_keys     = var.auth.ssh_keys,
@@ -52,7 +52,7 @@ data "cloudinit_config" "cloudinit_pve" {
       os            = var.base.os,
       nameservers   = var.network.dns,
       searchdomains = [ var.network.domain ],
-      domain        = "${var.name}-${count.index}",
+      domain        = "${var.vms_name}-${count.index}",
       agent_on      = var.agent_on
     })
   }
@@ -76,8 +76,9 @@ resource "proxmox_virtual_environment_download_file" "cloudinit_img" {
   datastore_id = "local"
   node_name    = var.node
 
-  url       = local.urls[var.base.os]
-  file_name = "${var.base.os}-${local.img_version[var.base.os]}-${var.base.arch}.qcow2"
+  url                 = local.urls[var.base.os]
+  file_name           = "${var.base.os}-${local.img_version[var.base.os]}-${var.base.arch}.qcow2"
+  overwrite_unmanaged = true
 }
 
 resource "proxmox_virtual_environment_pool" "pool" {

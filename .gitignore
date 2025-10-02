@@ -47,6 +47,8 @@ terraform.rc
 # Local ignored files
 .ignore/*
 !.ignore/.gitkeep
+**/.ignore/*
+!**/.ignore/.gitkeep
 
 # direnv files
 .direnv/

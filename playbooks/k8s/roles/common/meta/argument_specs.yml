@@ -1,0 +1,55 @@
+argument_specs:
+  main:
+    short_description: Perform base node setup tasks
+    author: whereyourspace <whereyourspace@gmail.com>
+    version_added: '0.1'
+    options:
+      install_packages:
+        description:
+          - Package categories which will be installed on system
+          - The V(net) value for installing network management tools,
+            including debugging, traffic capture, etc.
+          - The value of V(prof) is for installing packages used for
+            system status profiling
+        type: list
+        version_added: '0.1'
+        required: false
+        default: []
+      disks:
+        description:
+          - The list of disks on which the file systems will be
+            created and mounted to the system
+        type: list
+        version_added: '0.1'
+        required: false
+        default: []
+        elements: dict
+        options:
+          dev:
+            description:
+              - Path to disk
+            type: str
+            version_added: '0.1'
+            required: true
+          fs:
+            description:
+              - File system type
+            type: str
+            version_added: '0.1'
+            required: true
+            choices:
+              - ext4
+          mount:
+            description:
+              - File system mount path
+            type: str
+            version_added: '0.1'
+            required: true
+          role:
+            description:
+              - Disk designation
+            type: str
+            version_added: '0.1'
+            required: false
+            choices:
+              - data
