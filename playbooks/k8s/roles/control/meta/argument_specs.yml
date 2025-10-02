@@ -14,9 +14,9 @@ argument_specs:
         choices:
         - init
         - join
-      token:
+      k8s_init_token:
         description:
-        - Node joining token
+        - Node initialization and joining token
         version_added: 0.1
         type: str
-        required: False
+        required: True

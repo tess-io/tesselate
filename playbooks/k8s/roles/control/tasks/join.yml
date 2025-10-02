@@ -1,0 +1,21 @@
+- name: Calculate CA certificate SHA256 hash sum
+  block:
+    - name: Get certificate information
+      community.crypto.x509_certificate_info:
+        content: '{{ k8s_ca_crt }}'
+      register: cert_info
+    - name: Register facts
+      ansible.builtin.set_fact:
+        k8s_ca_crt_hash: '{{ cert_info.public_key_fingerprints["sha256"] | replace(":", "") }}'
+      when: (k8s_ca_crt_hash | default(omit)) is eq omit
+
+- name: K8S node joining
+  ansible.builtin.command:
+    argv:
+      - kubeadm
+      - join
+      - --control-plane
+      - '--discovery-token={{ k8s_init_token }}'
+      - '--discovery-token-ca-cert-hash=sha256:{{ k8s_ca_crt_hash }}'
+      - '{{ k8s_init_node }}:6443'
+    creates: /etc/kubernetes/kubelet.conf

@@ -104,6 +104,6 @@ module "vm_pools" {
   }
 }
 
-output "ip_addresses" {
-  value = { for name, vm in module.vm_pools: name => vm.ip_addresses }
+output "about" {
+  value = { for name, vm in module.vm_pools: name => vm.about }
 }

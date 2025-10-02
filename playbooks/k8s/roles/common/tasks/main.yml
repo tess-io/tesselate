@@ -21,7 +21,7 @@
   ansible.builtin.package:
     name: '{{ item }}'
     state: present
-  loop: '{{ [] | zip_longest(install_packages, fillvalue=distrib) | map("join", "-") | map("ansible.builtin.extract", categories) | flatten }}'
+  loop: '{{ [] | zip_longest(install_packages + ["ansible-requirements"], fillvalue=distrib) | map("join", "-") | map("ansible.builtin.extract", categories) | flatten }}'
   vars:
     distrib: '{{ ansible_facts.distribution | lower }}'
     categories:
@@ -42,6 +42,8 @@
         - bpftrace
       alpine-tools:
         - vim
+      alpine-ansible-requirements:
+        - py3-cryptography
 
 - name: Create additional file systems
   community.general.filesystem:
@@ -132,10 +134,14 @@
     checksum: 'sha256:https://dl.k8s.io/release/{{ common_k8s_version }}/bin/linux/{{ common_arch }}/{{ item }}.sha256'
     dest: '/opt/k8s/{{ common_k8s_version }}/{{ item }}/{{ item }}'
     mode: '0755'
+  register: download
   loop:
     - kubelet
     - kubeadm
     - kubectl
+  until: download is success
+  delay: 10
+  retries: 3
 
 - name: Setup K8S tools links
   ansible.builtin.file:

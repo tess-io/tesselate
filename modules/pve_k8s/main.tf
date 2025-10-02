@@ -1,5 +1,5 @@
 locals {
-  ip_addresses = { for name, vm in module.pve_pools: name => vm.ip_addresses }
+  about = { for name, pool in module.pve_pools: name => pool.about }
 
   pools_size = [
     for name, pool in var.groups:
@@ -11,17 +11,33 @@ locals {
       name => var.start_id + sum(ind > 0 ? [ for i in range(ind): local.pools_size[i] ] : [ 0 ])
   }
 
-  all_hosts_to_group_list = flatten([
+  all_hosts_about_list = flatten([
     for name, pool in module.pve_pools:
-      [ for addr in pool.ip_addresses: { addr = addr, group = name, } ]
+      [ for about in pool.about: { about = about, group = name, } ]
   ])
-  all_hosts_to_group_map = { for obj in local.all_hosts_to_group_list: obj.addr => obj.group }
+  all_hosts_to_info_map = {
+    for obj in local.all_hosts_about_list:
+      obj.about.ip_address => {
+        group = obj.group
+        name  = obj.about.name
+      }
+  }
 
   control_group_name = one([for name, group in var.groups: name if group.is_control])
   worker_groups = setsubtract(keys(var.groups), [local.control_group_name])
 
+  control_group_machines = [
+    for addr, info in local.all_hosts_to_info_map:
+      addr if info.group == local.control_group_name
+  ]
+  worker_groups_machines = {
+    for addr, info in local.all_hosts_to_info_map:
+      addr => info if info.group != local.control_group_name
+  }
+
   become_methods = {
     alpine = "doas"
+    ubuntu = "sudo"
   }
 }
 
@@ -31,7 +47,7 @@ module "pve_pools" {
   for_each = var.groups
 
   name     = "k8s-${each.key}-nodes"
-  vms_name = "k8s-${each.key}-node"
+  vms_name = "${each.value.node_name}"
   tags     = [ "K8S-cluster", "k8s-${each.key}-nodes" ]
   size     = each.value.size
   auth     = var.auth
@@ -69,26 +85,83 @@ module "pve_pools" {
   }
 }
 
+resource "random_string" "parts" {
+  for_each = {
+    left = 6,
+    right = 16,
+  }
+
+  length      = each.value
+  special     = false
+  upper       = false
+  min_numeric = floor(each.value / 3)
+}
+
 resource "ansible_playbook" "control" {
-  count = local.control_group_name == null ? 0 : 1
+  count = length(local.control_group_machines)
   
   playbook = "${path.root}/playbooks/k8s/control.yml"
-  name     = local.ip_addresses[local.control_group_name][0]
+  name     = local.about[local.control_group_name][count.index].ip_address
+
+  diff_mode = true
+  verbosity = 1
 
   extra_vars = {
     ansible_user          = var.auth.user
     ansible_become_method = local.become_methods[var.base.os]
+
+    k8s_init_node  = local.about[local.control_group_name][0].ip_address
+    k8s_init_token = "${random_string.parts["left"].result}.${random_string.parts["right"].result}"
+    k8s_ca_crt     = var.cert.ca
+    k8s_ca_key     = var.cert.key
+
+    state = count.index == 0 ? "init" : "join"
   }
 }
 
 resource "ansible_playbook" "workers" {
-  for_each = local.worker_groups
+  for_each = local.worker_groups_machines
   
   playbook = "${path.root}/playbooks/k8s/workers.yml"
-  name     = local.ip_addresses[each.value][0]
+  name     = each.key
+
+  diff_mode = true
+  verbosity = 1
 
   extra_vars = {
     ansible_user          = var.auth.user
     ansible_become_method = local.become_methods[var.base.os]
+
+    k8s_init_node  = local.about[local.control_group_name][0].ip_address
+    k8s_init_token = "${random_string.parts["left"].result}.${random_string.parts["right"].result}"
+    k8s_ca_crt     = var.cert.ca
+    k8s_ca_key     = var.cert.key
   }
+
+  depends_on = [
+    ansible_playbook.control
+  ]
+}
+
+resource "ansible_playbook" "labels" {
+  for_each = local.worker_groups_machines
+  
+  playbook = "${path.root}/playbooks/k8s/labels.yml"
+  name     = local.about[local.control_group_name][0].ip_address
+
+  diff_mode = true
+  verbosity = 1
+
+  extra_vars = {
+    ansible_user          = var.auth.user
+    ansible_become_method = local.become_methods[var.base.os]
+
+    node_name = each.value.name
+    node_role = each.value.group
+  }
+
+  depends_on = [
+    ansible_playbook.control,
+    ansible_playbook.workers,
+  ]
 }

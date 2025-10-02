@@ -1,0 +1,26 @@
+- name: Create PKI directory
+  ansible.builtin.file:
+    path: /etc/kubernetes/pki
+    state: directory
+    mode: '0755'
+
+- name: Place private key
+  ansible.builtin.copy:
+    content: '{{ k8s_ca_key }}'
+    dest: /etc/kubernetes/pki/ca.key
+    mode: '0600'
+
+- name: Place self signed certificate
+  ansible.builtin.copy:
+    content: '{{ k8s_ca_crt }}'
+    dest: /etc/kubernetes/pki/ca.crt
+    mode: '0644'
+
+- name: K8S node initialization
+  ansible.builtin.command:
+    argv:
+      - kubeadm
+      - init
+      - '--control-plane-endpoint={{ ansible_facts.default_ipv4.address }}'
+      - '--token={{ k8s_init_token }}'
+    creates: /etc/kubernetes/kubelet.conf

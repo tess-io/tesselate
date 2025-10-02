@@ -16,15 +16,7 @@
             role: data
 
 - name: K8S control node initialization play
-  hosts: all[0]
+  hosts: all
+  become: true
   roles:
     - role: control
-      vars:
-        state: init
-
-- name: K8S control nodes join play
-  hosts: all[1:]
-  roles:
-    - role: control
-      vars:
-        state: join

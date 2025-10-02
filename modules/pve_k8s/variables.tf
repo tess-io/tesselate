@@ -85,3 +85,12 @@ variable "groups" {
   }))
   nullable = false
 }
+
+variable "cert" {
+  description = "K8S CA certificate"
+  type = object({
+    ca = string,
+    key = string,
+  })
+  nullable = false
+}
