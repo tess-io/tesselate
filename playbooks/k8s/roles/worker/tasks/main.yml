@@ -1,3 +1,11 @@
+- name: Read certificate and token
+  ansible.builtin.set_fact:
+    token: '{{ data.token }}'
+  vars:
+    data: '{{ lookup("ansible.builtin.file", "/tmp/tesselate-data.yml") | from_yaml }}'
+  become: false
+  delegate_to: localhost
+
 - name: Calculate CA certificate SHA256 hash sum
   block:
     - name: Get certificate information
@@ -14,7 +22,7 @@
     argv:
       - kubeadm
       - join
-      - '--token={{ k8s_init_token }}'
+      - '--token={{ token }}'
       - '--discovery-token-ca-cert-hash=sha256:{{ k8s_ca_crt_hash }}'
       - '{{ k8s_init_node }}:6443'
     creates: /etc/kubernetes/kubelet.conf

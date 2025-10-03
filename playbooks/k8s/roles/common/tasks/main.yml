@@ -3,9 +3,13 @@
     common_arch: '{{ arch_conversion[ansible_architecture] }}'
     common_k8s_version: '{{ (version == "stable") | ternary(stable, version) }}'
   vars:
-    stable: '{{ lookup("ansible.builtin.url", "https://dl.k8s.io/release/stable.txt") }}'
+    stable: '{{ lookup("ansible.builtin.url", "https://dl.k8s.io/release/stable.txt", timeout = 20) }}'
     arch_conversion:
       x86_64: amd64
+  register: populate
+  until: populate is success
+  delay: 1
+  retries: 10
 
 - name: Populate service facts
   ansible.builtin.service_facts:
@@ -15,7 +19,7 @@
     path: /etc/cloud/cloud-init.disabled
     state: touch
     mode: '0640'
-  when: ansible_facts.service['cloud-init'].state | default ('stopped') == 'started'
+  when: (ansible_facts.services['cloud-init'].state | default ('stopped')) == 'started'
 
 - name: Installation base system software
   ansible.builtin.package:
@@ -120,6 +124,7 @@
       loop:
         - /var/log/kubelet
         - /etc/kubernetes
+        - /var/log/k8s
     - name: Create installation directories
       ansible.builtin.file:
         path: '/opt/k8s/{{ common_k8s_version }}/{{ item }}'
@@ -140,8 +145,8 @@
     - kubeadm
     - kubectl
   until: download is success
-  delay: 10
-  retries: 3
+  delay: 5
+  retries: 2
 
 - name: Setup K8S tools links
   ansible.builtin.file:

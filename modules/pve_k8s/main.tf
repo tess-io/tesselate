@@ -85,38 +85,51 @@ module "pve_pools" {
   }
 }
 
-resource "random_string" "parts" {
-  for_each = {
-    left = 6,
-    right = 16,
-  }
-
-  length      = each.value
-  special     = false
-  upper       = false
-  min_numeric = floor(each.value / 3)
-}
-
-resource "ansible_playbook" "control" {
-  count = length(local.control_group_machines)
-  
+resource "ansible_playbook" "control_init" {
   playbook = "${path.root}/playbooks/k8s/control.yml"
-  name     = local.about[local.control_group_name][count.index].ip_address
+  name     = local.about[local.control_group_name][0].ip_address
 
   diff_mode = true
   verbosity = 1
+
+  tags = [ "common", "init" ]
+
+  extra_vars = {
+    ansible_user          = var.auth.user
+    ansible_become_method = local.become_methods[var.base.os]
+
+    k8s_ca_crt     = var.cert.ca
+    k8s_ca_key     = var.cert.key
+
+    state = "init"
+  }
+}
+
+resource "ansible_playbook" "control_join" {
+  count = length(local.control_group_machines) - 1
+  
+  playbook = "${path.root}/playbooks/k8s/control.yml"
+  name     = local.about[local.control_group_name][count.index + 1].ip_address
+
+  diff_mode = true
+  verbosity = 1
+
+  tags = [ "common", "join" ]
 
   extra_vars = {
     ansible_user          = var.auth.user
     ansible_become_method = local.become_methods[var.base.os]
 
     k8s_init_node  = local.about[local.control_group_name][0].ip_address
-    k8s_init_token = "${random_string.parts["left"].result}.${random_string.parts["right"].result}"
     k8s_ca_crt     = var.cert.ca
     k8s_ca_key     = var.cert.key
 
-    state = count.index == 0 ? "init" : "join"
+    state = "join"
   }
+
+  depends_on = [
+    ansible_playbook.control_init
+  ]
 }
 
 resource "ansible_playbook" "workers" {
@@ -133,13 +146,12 @@ resource "ansible_playbook" "workers" {
     ansible_become_method = local.become_methods[var.base.os]
 
     k8s_init_node  = local.about[local.control_group_name][0].ip_address
-    k8s_init_token = "${random_string.parts["left"].result}.${random_string.parts["right"].result}"
     k8s_ca_crt     = var.cert.ca
     k8s_ca_key     = var.cert.key
   }
 
   depends_on = [
-    ansible_playbook.control
+    ansible_playbook.control_init,
   ]
 }
 
@@ -161,7 +173,7 @@ resource "ansible_playbook" "labels" {
   }
 
   depends_on = [
-    ansible_playbook.control,
+    ansible_playbook.control_init,
     ansible_playbook.workers,
   ]
 }

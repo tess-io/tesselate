@@ -1,10 +1,8 @@
 - name: K8S label nodes
   hosts: all
   become: true
-
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
-
   tasks:
     - name: Change node label
       ansible.builtin.command:
@@ -15,3 +13,7 @@
           - --overwrite
           - '{{ node_name }}'
           - 'node-role.kubernetes.io/{{ node_role }}='
+      register: cmd
+      until: cmd is success
+      delay: 5
+      retries: 3

@@ -1,26 +1,56 @@
-- name: Create PKI directory
-  ansible.builtin.file:
-    path: /etc/kubernetes/pki
-    state: directory
-    mode: '0755'
+- name: Generate token and key
+  block:
+    - name: Get file stat
+      ansible.builtin.stat:
+        path: /tmp/tesselate-data.yml
+      register: data_file 
+      become: false
+      delegate_to: localhost
+    - name: Generate cert
+      ansible.builtin.command: kubeadm certs certificate-key
+      register: cert
+    - name: Generate token and certificate facts
+      ansible.builtin.set_fact:
+        token: '{{ lookup("community.general.random_string", length = 6, special = false, upper = false, min_numeric = 2) }}.{{ lookup("community.general.random_string", length = 16, special = false, upper = false, min_numeric = 2) }}'
+        cert_key: '{{ cert.stdout }}'
+      when: not data_file.stat.exists 
+    - name: Read from file
+      ansible.builtin.set_fact:
+        token: '{{ data.token }}'
+        cert_key: '{{ data.cert_key }}'
+      vars:
+        data: '{{ lookup("ansible.builtin.file", "/tmp/tesselate-data.yml") | from_yaml }}'
+      when: data_file.stat.exists 
+      become: false
+      delegate_to: localhost
 
-- name: Place private key
-  ansible.builtin.copy:
-    content: '{{ k8s_ca_key }}'
-    dest: /etc/kubernetes/pki/ca.key
-    mode: '0600'
-
-- name: Place self signed certificate
-  ansible.builtin.copy:
-    content: '{{ k8s_ca_crt }}'
-    dest: /etc/kubernetes/pki/ca.crt
-    mode: '0644'
+- name: Place self signed certificates
+  ansible.builtin.include_tasks:
+    file: place-certs.yml
 
 - name: K8S node initialization
-  ansible.builtin.command:
-    argv:
-      - kubeadm
-      - init
-      - '--control-plane-endpoint={{ ansible_facts.default_ipv4.address }}'
-      - '--token={{ k8s_init_token }}'
-    creates: /etc/kubernetes/kubelet.conf
+  ansible.builtin.shell: 'kubeadm init --control-plane-endpoint={{ ansible_facts.default_ipv4.address }} --token={{ token }} --certificate-key={{ cert_key }} --upload-certs 2>&1 | tee /var/log/k8s/init.log'
+  args:
+    creates: /etc/kubernetes/kubelet.conf 
+
+- name: Place token token and key
+  ansible.builtin.copy:
+    content: '{{ data | to_nice_yaml }}'
+    dest: /tmp/tesselate-data.yml
+  vars:
+    data:
+      token: '{{ token }}'
+      cert_key: '{{ cert_key }}'
+  delegate_to: localhost
+  become: false
+
+- name: Place token token and key
+  ansible.builtin.copy:
+    content: '{{ data | to_nice_yaml }}'
+    dest: /tmp/tesselate-data.yml
+  vars:
+    data:
+      token: '{{ token }}'
+      cert_key: '{{ cert_key }}'
+  become: false
+  delegate_to: localhost
