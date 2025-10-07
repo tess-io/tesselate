@@ -29,7 +29,13 @@
     file: place-certs.yml
 
 - name: K8S node initialization
-  ansible.builtin.shell: 'kubeadm init --control-plane-endpoint={{ ansible_facts.default_ipv4.address }} --token={{ token }} --certificate-key={{ cert_key }} --upload-certs 2>&1 | tee /var/log/k8s/init.log'
+  ansible.builtin.shell: |
+    kubeadm init \
+      --control-plane-endpoint={{ ansible_facts.default_ipv4.address }} \
+      --token={{ token }} \
+      --certificate-key={{ cert_key }} \
+      --pod-network-cidr={{ k8s_pod_cidr }} \
+      --upload-certs 2>&1 | tee /var/log/k8s/init.log
   args:
     creates: /etc/kubernetes/kubelet.conf 
 
@@ -54,3 +60,21 @@
       cert_key: '{{ cert_key }}'
   become: false
   delegate_to: localhost
+
+- name: Prepare kubectl on local and remote machine
+  block:
+    - name: Download kubeconfig file
+      ansible.builtin.fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: '{{ save_kubeconfig_to }}'
+        flat: true
+      run_once: true
+    - name: Create .kube directory on remote
+      ansible.builtin.file:
+        path: "~/.kube"
+        state: directory
+    - name: Copy administrator configuration file
+      ansible.builtin.copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "~/.kube/config"
+        remote_src: true
