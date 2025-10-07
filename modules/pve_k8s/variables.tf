@@ -94,3 +94,9 @@ variable "cert" {
   })
   nullable = false
 }
+
+variable "kubeconfig_path" {
+  description = "The local path where the kubeconfig file will be uploaded"
+  type        = string
+  default     = "/tmp/kubeconfig"
+}

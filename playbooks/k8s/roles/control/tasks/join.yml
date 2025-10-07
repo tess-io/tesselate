@@ -22,3 +22,15 @@
   ansible.builtin.shell: 'kubeadm join --control-plane --discovery-token={{ token }} --discovery-token-ca-cert-hash=sha256:{{ k8s_ca_crt_hash }} --certificate-key={{ cert_key }} {{ k8s_init_node }}:6443 2>&1 | tee /var/log/k8s/join.log'
   args:
     creates: /etc/kubernetes/kubelet.conf
+
+- name: Prepare kubectl on remote machine
+  block:
+    - name: Create .kube directory on remote
+      ansible.builtin.file:
+        path: "~/.kube"
+        state: directory
+    - name: Copy administrator configuration file
+      ansible.builtin.copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "~/.kube/config"
+        remote_src: true

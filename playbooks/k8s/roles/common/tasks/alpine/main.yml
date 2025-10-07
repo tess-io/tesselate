@@ -8,6 +8,7 @@
     addition_paths:
       - /sys
       - /sys/fs/cgroup
+      - /run
 
 - name: Copy files
   ansible.builtin.copy:
@@ -26,3 +27,6 @@
     name: local
     enabled: true
     state: started
+
+- name: Manually run make-shared.sh
+  ansible.builtin.command: /etc/local.d/make-shared.sh

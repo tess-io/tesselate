@@ -100,8 +100,11 @@ resource "ansible_playbook" "control_init" {
 
     k8s_ca_crt     = var.cert.ca
     k8s_ca_key     = var.cert.key
+    k8s_pod_cidr   = "172.16.0.0/16"
 
     state = "init"
+
+    save_kubeconfig_to = var.kubeconfig_path
   }
 }
 
@@ -174,6 +177,32 @@ resource "ansible_playbook" "labels" {
 
   depends_on = [
     ansible_playbook.control_init,
+    ansible_playbook.control_join,
+    ansible_playbook.workers,
+  ]
+}
+
+resource "helm_release" "cilium" {
+  name       = "cilium"
+  namespace  = "kube-system"
+  chart      = "cilium"
+  repository = "https://helm.cilium.io" 
+
+  set = [
+    { name = "version", value = "1.16.5" },
+    { name = "cgroup.autoMount.enabled", value = "false" },
+    { name = "cgroup.hostRoot", value = "/sys/fs/cgroup" },
+    { name = "operator.replicas", value = "1" },
+    { name = "ipam.operator.clusterPoolIPv4PodCIDRList", value = "172.16.0.0/16" },
+    { name = "k8sServicePort", value = "10248" },
+    { name = "ipam-mode", value = "cluster-pool" },
+    { name = "cni.binPath", value = "/usr/libexec/cni" },
+  ]
+
+
+  depends_on = [
+    ansible_playbook.control_init,
+    ansible_playbook.control_join,
     ansible_playbook.workers,
   ]
 }

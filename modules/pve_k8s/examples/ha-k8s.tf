@@ -17,6 +17,12 @@ provider "proxmox" {
   password = local.proxmox_pass
 }
 
+provider "helm" {
+  kubernetes = {
+    config_path = "/tmp/k8s_admin.conf"
+  }
+}
+
 module "pve_k8s" {
   source = "./modules/pve_k8s"
 
@@ -25,6 +31,8 @@ module "pve_k8s" {
     dns    = "8.8.8.8"
     domain = "cluster.local"
   }
+
+  kubeconfig_path = "/tmp/k8s_admin.conf"
 
   start_id = 100
   node     = "pve"
