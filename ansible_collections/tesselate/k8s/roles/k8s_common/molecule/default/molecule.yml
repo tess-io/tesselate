@@ -1,0 +1,40 @@
+driver:
+  name: podman
+  options:
+    managed: true
+
+platforms:
+  - name: alpine
+    image: python:3-alpine
+    pre_build_image: true
+    command:
+      - sh
+      - -c
+      - trap exit SIGTERM SIGINT SIGQUIT; while :; do sleep 1; done
+    volumes:
+      - data:/mnt/data
+    networks:
+    groups:
+      control:
+
+provisioner:
+  ansible:
+    config_options:
+      collections_path: ${MOLECULE_PROJECT_DIRECTORY}/../../../../..
+  inventory:
+    group_vars:
+      control:
+        k8s_common_version: stable
+        k8s_common_install_packages:
+          - net
+          - prof
+          - tools
+
+scenario:
+  test_sequence:
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - destroy

@@ -1,0 +1,4 @@
+- name: Converge
+  hosts: all
+  roles:
+    - role: tesselate.k8s.k8s_common
