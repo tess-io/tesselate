@@ -50,9 +50,9 @@ variable "network" {
   type = object({
     cidr   = string
     dns    = string
-    domain = string
+    domain = optional(string, "cluster.local")
   })
-  default = { cidr = "172.16.0.0/24", dns = "8.8.8.8", domain = "cluster.local" }
+  default = { cidr = "172.16.0.0/24", dns = "8.8.8.8", }
 
   validation {
     condition     = var.network.cidr != null
@@ -65,7 +65,7 @@ variable "network" {
   }
 
   validation {
-    condition     = var.network.domain != null
+    condition     = var.network.domain != null && length(var.network.domain) > 0
     error_message = "Must have valid domain name"
   }
 }
@@ -84,6 +84,11 @@ variable "groups" {
     })
   }))
   nullable = false
+
+  validation {
+    condition     = anytrue([ for name, group in var.groups: group.is_control ])
+    error_message = "One of the group must be control"
+  }
 }
 
 variable "cert" {
@@ -93,10 +98,31 @@ variable "cert" {
     key = string,
   })
   nullable = false
+
+  validation {
+    condition     = var.cert.ca != null
+    error_message = "The certificate has an incorrect format"
+  }
+
+  validation {
+    condition     = var.cert.key != null
+    error_message = "The certificate's private key has an incorrect format"
+  }
 }
 
 variable "kubeconfig_path" {
   description = "The local path where the kubeconfig file will be uploaded"
   type        = string
   default     = "/tmp/kubeconfig"
+
+  validation {
+    condition     = var.kubeconfig_path != null
+    error_message = "${var.kubeconfig_path}: Permission denied"
+  }
+}
+
+variable "playbooks_dir" {
+  description = "The local path where playbooks locate. For testing purposes only"
+  type        = string
+  default     = null
 }

@@ -1,0 +1,45 @@
+- name: Read certificate and token
+  ansible.builtin.set_fact:
+    k8s_control_token: '{{ data.token }}'
+    k8s_control_cert_key: '{{ data.cert_key }}'
+  vars:
+    data: '{{ lookup("ansible.builtin.file", "/tmp/tesselate-data.yml") | from_yaml }}'
+  become: false
+  delegate_to: localhost
+
+- name: Calculate CA certificate SHA256 hash sum
+  block:
+    - name: Get certificate information
+      community.crypto.x509_certificate_info:
+        content: '{{ k8s_ca_crt }}'
+      register: k8s_control_cert_info
+    - name: Register facts
+      ansible.builtin.set_fact:
+        k8s_control_ca_cert_hash: '{{ k8s_control_cert_info.public_key_fingerprints["sha256"] | replace(":", "") }}'
+      when: (k8s_control_ca_cert_hash | default(omit)) is eq omit
+
+- name: K8S node joining
+  ansible.builtin.shell: |
+    set -o pipefail
+    kubeadm join -v3 \
+      --control-plane \
+      --discovery-token={{ k8s_control_token }} \
+      --discovery-token-ca-cert-hash=sha256:{{ k8s_control_ca_cert_hash }} \
+      --certificate-key={{ k8s_control_cert_key }} \
+      {{ k8s_init_node }}:6443 2>&1 | tee /var/log/k8s/join.log
+  args:
+    creates: /etc/kubernetes/kubelet.conf
+
+- name: Prepare kubectl on remote machine
+  block:
+    - name: Create .kube directory on remote
+      ansible.builtin.file:
+        path: "~/.kube"
+        state: directory
+        mode: '0700'
+    - name: Copy administrator configuration file
+      ansible.builtin.copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "~/.kube/config"
+        remote_src: true
+        mode: '0600'

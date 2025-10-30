@@ -24,8 +24,7 @@
         # ansible
         ansible
         ansible-lint
-        python313
-        python313Packages.pip
+        molecule
 
         # vault
         vault 

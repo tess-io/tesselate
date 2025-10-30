@@ -1,0 +1,6 @@
+dependencies:
+  - role: k8s_common
+    vars:
+      k8s_common_version: '{{ k8s_worker_version }}'
+      k8s_common_install_packages: '{{ k8s_worker_install_packages }}'
+      k8s_common_disks: '{{ k8s_worker_disks }}'

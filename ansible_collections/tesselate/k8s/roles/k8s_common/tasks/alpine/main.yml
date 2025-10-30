@@ -1,0 +1,33 @@
+- name: Copy make-shared script
+  ansible.builtin.template:
+    src: templates/make-shared.sh.j2
+    dest: /etc/local.d/make-shared.sh
+    mode: '0755'
+  vars:
+    paths: '{{ disks | default([]) | map(attribute="mount") | list + addition_paths }}'
+    addition_paths:
+      - /sys
+      - /sys/fs/cgroup
+      - /run
+
+- name: Copy files
+  ansible.builtin.copy:
+    src: 'files/{{ item.src }}'
+    dest: '/etc/{{ item.dest }}'
+    mode: '{{ item.mode | default("0644") }}'
+  loop:
+    - src: openrc/kubelet.initd
+      dest: init.d/kubelet
+      mode: "0755"
+    - src: openrc/kubelet.confd
+      dest: conf.d/kubelet
+
+- name: Enable and startup local service
+  ansible.builtin.service:
+    name: local
+    enabled: true
+    state: started
+
+- name: Manually run make-shared.sh
+  ansible.builtin.command: /etc/local.d/make-shared.sh
+  changed_when: false

@@ -191,6 +191,12 @@ resource "proxmox_virtual_environment_vm" "vm" {
       cache        = "none"
     }
   }
+
+  lifecycle {
+    ignore_changes = [
+      disk.0.import_from,
+    ]
+  }
 }
 
 resource "proxmox_virtual_environment_firewall_rules" "rules" {

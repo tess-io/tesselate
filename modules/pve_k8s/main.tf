@@ -39,6 +39,8 @@ locals {
     alpine = "doas"
     ubuntu = "sudo"
   }
+
+  playbooks_dir = var.playbooks_dir != null ? var.playbooks_dir : "${path.root}/playbooks"
 }
 
 module "pve_pools" {
@@ -86,7 +88,7 @@ module "pve_pools" {
 }
 
 resource "ansible_playbook" "control_init" {
-  playbook = "${path.root}/playbooks/k8s/control.yml"
+  playbook = "tesselate.k8s.k8s_controls"
   name     = local.about[local.control_group_name][0].ip_address
 
   diff_mode = true
@@ -111,7 +113,7 @@ resource "ansible_playbook" "control_init" {
 resource "ansible_playbook" "control_join" {
   count = length(local.control_group_machines) - 1
   
-  playbook = "${path.root}/playbooks/k8s/control.yml"
+  playbook = "tesselate.k8s.k8s_controls"
   name     = local.about[local.control_group_name][count.index + 1].ip_address
 
   diff_mode = true
@@ -138,7 +140,7 @@ resource "ansible_playbook" "control_join" {
 resource "ansible_playbook" "workers" {
   for_each = local.worker_groups_machines
   
-  playbook = "${path.root}/playbooks/k8s/workers.yml"
+  playbook = "tesselate.k8s.k8s_workers"
   name     = each.key
 
   diff_mode = true
@@ -161,7 +163,7 @@ resource "ansible_playbook" "workers" {
 resource "ansible_playbook" "labels" {
   for_each = local.worker_groups_machines
   
-  playbook = "${path.root}/playbooks/k8s/labels.yml"
+  playbook = "tesselate.k8s.k8s_labels"
   name     = local.about[local.control_group_name][0].ip_address
 
   diff_mode = true
