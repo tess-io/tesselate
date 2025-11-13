@@ -11,10 +11,10 @@ locals {
 }
 
 data "http" "requests" {
-  for_each = toset([ "healthz", "readyz", "livez" ])
-  
+  for_each = toset(["healthz", "readyz", "livez"])
+
   url = "${local.cluster["server"]}/${each.value}"
-  
+
   ca_cert_pem     = local.ca_data
   client_cert_pem = local.client.cert_data
   client_key_pem  = local.client.key_data

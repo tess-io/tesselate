@@ -1,6 +1,6 @@
 ephemeral "vault_kv_secret_v2" "proxmox_creds" {
   mount = "infra-secrets"
-  name = "proxmox/creds"
+  name  = "proxmox/creds"
 }
 
 locals {
@@ -54,7 +54,7 @@ module "pve_k8s" {
 
       resources = {
         cpu    = 4
-        memory = 8         
+        memory = 8
       }
     }
     worker = {

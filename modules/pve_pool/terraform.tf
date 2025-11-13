@@ -3,18 +3,18 @@ terraform {
 
   required_providers {
     proxmox = {
-      source   = "bpg/proxmox"
-      version  = ">= 0.83.0"
+      source  = "bpg/proxmox"
+      version = ">= 0.83.0"
     }
 
     vault = {
-      source   = "hashicorp/vault"
-      version  = ">= 5.2.0"
+      source  = "hashicorp/vault"
+      version = ">= 5.2.0"
     }
 
     cloudinit = {
-      source   = "hashicorp/cloudinit"  
-      version  = ">= 2.3.7"
+      source  = "hashicorp/cloudinit"
+      version = ">= 2.3.7"
     }
   }
 }

@@ -86,7 +86,7 @@ variable "groups" {
   nullable = false
 
   validation {
-    condition     = anytrue([ for name, group in var.groups: group.is_control ])
+    condition     = anytrue([for name, group in var.groups : group.is_control])
     error_message = "One of the group must be control"
   }
 }
@@ -94,7 +94,7 @@ variable "groups" {
 variable "cert" {
   description = "K8S CA certificate"
   type = object({
-    ca = string,
+    ca  = string,
     key = string,
   })
   nullable = false

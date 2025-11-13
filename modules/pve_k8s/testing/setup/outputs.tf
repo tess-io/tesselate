@@ -1,6 +1,6 @@
 output "ssh" {
   description = "SSH private and public keys"
-  sensitive = true
+  sensitive   = true
 
   value = {
     private_key = tls_private_key.ssh.private_key_openssh
@@ -10,7 +10,7 @@ output "ssh" {
 
 output "cert" {
   description = "A self-signed certificate used to deploy the K8S test cluster"
-  sensitive = true
+  sensitive   = true
   #ephemeral = true
 
   value = {
@@ -22,7 +22,7 @@ output "cert" {
 output "creds" {
   description = "Sensitive information obtained from Vault"
   #ephemeral   = true
-  sensitive   = true
+  sensitive = true
 
   value = {
     proxmox = {

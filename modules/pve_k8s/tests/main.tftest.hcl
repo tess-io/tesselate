@@ -23,10 +23,10 @@ variable "ssh_public_key" {
 
 variables {
   network = {
-    cidr   = "192.168.0.0/24"
-    dns    = "8.8.8.8"
+    cidr = "192.168.0.0/24"
+    dns  = "8.8.8.8"
   }
-  
+
   base = {
     os      = "alpine"
     arch    = "x86_64"
@@ -45,7 +45,7 @@ variables {
 
       resources = {
         cpu    = 4
-        memory = 8         
+        memory = 8
       }
     }
 
@@ -91,7 +91,7 @@ run "apply" {
     auth = {
       user     = "user"
       pass     = "$5$C.6CsFKu0G6.tRIc$ciI0ED17SzFKA10agSTe87SnfLQ32q9iu8sq3ivt0R9"
-      ssh_keys = [ trimspace(file(var.ssh_public_key)) ]
+      ssh_keys = [trimspace(file(var.ssh_public_key))]
     }
 
     cert = {
@@ -105,28 +105,28 @@ run "verify" {
   variables {
     kubeconfig_path = "/tmp/k8s_admin_test.conf"
   }
-  
+
   module {
     source = "./testing/verify"
   }
 
   assert {
-    condition = data.http.requests["healthz"].response_body == "ok" && data.http.requests["healthz"].status_code == 200
-    error_message = "The cluster is not healthy. Expected: ok, 200 . Actual: ${data.http.requests["healthz"].response_body}, ${data.http.requests["healthz"].status_code }"
+    condition     = data.http.requests["healthz"].response_body == "ok" && data.http.requests["healthz"].status_code == 200
+    error_message = "The cluster is not healthy. Expected: ok, 200 . Actual: ${data.http.requests["healthz"].response_body}, ${data.http.requests["healthz"].status_code}"
   }
 
   assert {
-    condition = data.http.requests["readyz"].response_body == "ok" && data.http.requests["readyz"].status_code == 200
+    condition     = data.http.requests["readyz"].response_body == "ok" && data.http.requests["readyz"].status_code == 200
     error_message = "The cluster is not ready. Expected: ok, 200. Actual: ${data.http.requests["readyz"].response_body}, ${data.http.requests["readyz"].status_code}"
   }
 
   assert {
-    condition = data.http.requests["livez"].response_body == "ok" && data.http.requests["livez"].status_code == 200
+    condition     = data.http.requests["livez"].response_body == "ok" && data.http.requests["livez"].status_code == 200
     error_message = "The cluster is not live. Expected: ok, 200. Actual: ${data.http.requests["livez"].response_body}, ${data.http.requests["livez"].status_code}"
   }
 
   assert {
-    condition = data.http.cilium.status_code == 200
+    condition     = data.http.cilium.status_code == 200
     error_message = "The cilium CNI is not found in cluster. Expected: 200. Actual: ${data.http.cilium.status_code}"
   }
 }

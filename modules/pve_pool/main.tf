@@ -21,11 +21,11 @@ locals {
     ubuntu = var.base.os == "ubuntu" ? var.base.version : null
   }
 
-  cidr = split("/", var.network.cidr)
-  net_part = local.cidr[0]
+  cidr      = split("/", var.network.cidr)
+  net_part  = local.cidr[0]
   mask_part = local.cidr[1]
 
-  ipv4_addresses = [ for ind in range(var.size): cidrhost(var.network.cidr, ind + var.start_id) ]
+  ipv4_addresses = [for ind in range(var.size) : cidrhost(var.network.cidr, ind + var.start_id)]
 }
 
 data "cloudinit_config" "cloudinit_pve" {
@@ -37,7 +37,7 @@ data "cloudinit_config" "cloudinit_pve" {
   part {
     content_type = "text/cloud-config"
     filename     = "base-cloud-config.yml"
-    content      = templatefile("${path.module}/cloud-init/base-cloud-config.yml", {
+    content = templatefile("${path.module}/cloud-init/base-cloud-config.yml", {
       fqdn              = "${var.vms_name}-${count.index}.${var.network.domain}"
       default_user      = var.auth.user,
       default_pass_hash = var.auth.pass,
@@ -48,10 +48,10 @@ data "cloudinit_config" "cloudinit_pve" {
   part {
     content_type = "text/cloud-config"
     filename     = "pve-cloud-config.yml"
-    content      = templatefile("${path.module}/cloud-init/pve-cloud-config.yml", {
+    content = templatefile("${path.module}/cloud-init/pve-cloud-config.yml", {
       os            = var.base.os,
       nameservers   = var.network.dns,
-      searchdomains = [ var.network.domain ],
+      searchdomains = [var.network.domain],
       domain        = "${var.vms_name}-${count.index}",
       agent_on      = var.agent_on
     })
@@ -60,7 +60,7 @@ data "cloudinit_config" "cloudinit_pve" {
 
 resource "proxmox_virtual_environment_file" "cloudinit_pve" {
   count = var.size
-  
+
   content_type = "snippets"
   datastore_id = "local"
   node_name    = var.node
@@ -77,7 +77,7 @@ resource "proxmox_virtual_environment_download_file" "cloudinit_img" {
   node_name    = var.node
 
   url                 = local.urls[var.base.os]
-  file_name           = "${var.base.os}-${local.img_version[var.base.os]}-${var.base.arch}.qcow2"
+  file_name           = "${var.name}-${var.base.os}-${local.img_version[var.base.os]}-${var.base.arch}.qcow2"
   overwrite_unmanaged = true
 }
 
@@ -91,7 +91,7 @@ resource "proxmox_virtual_environment_cluster_firewall_security_group" "sc" {
   comment = "Custom traffic filtering rules for a pool ${var.name}"
 
   dynamic "rule" {
-    for_each = var.network.acls 
+    for_each = var.network.acls
 
     content {
       type   = "in"
@@ -160,7 +160,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
   efi_disk {
     datastore_id = "SSD"
-    type = "4m"
+    type         = "4m"
   }
 
   disk {
@@ -175,7 +175,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
     backup       = false
     cache        = "none"
   }
-  
+
   dynamic "disk" {
     for_each = var.disks.other
 

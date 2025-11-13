@@ -6,7 +6,7 @@ terraform {
       source  = "bpg/proxmox"
       version = ">= 0.83.0"
     }
-    
+
     ansible = {
       source  = "ansible/ansible"
       version = ">= 1.3.0"
@@ -28,7 +28,7 @@ terraform {
     }
 
     common = {
-      source  = "tess-io/common"
+      source = "tess-io/common"
     }
   }
 }

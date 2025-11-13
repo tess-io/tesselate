@@ -1,7 +1,7 @@
 variable "name" {
   description = "VMs pool name"
-  type      = string
-  nullable  = false
+  type        = string
+  nullable    = false
 }
 
 variable "vms_name" {
@@ -30,9 +30,9 @@ variable "use_agent" {
 variable "auth" {
   description = "VMs auth credential"
   type = object({
-    user      = string
-    pass      = string
-    ssh_keys  = list(string)
+    user     = string
+    pass     = string
+    ssh_keys = list(string)
   })
   nullable = false
 
@@ -59,7 +59,7 @@ variable "tags" {
   default     = []
 
   validation {
-    condition     = alltrue([for tag in var.tags: can(regex("^[a-zA-Z0-9-_]+$", tag))])
+    condition     = alltrue([for tag in var.tags : can(regex("^[a-zA-Z0-9-_]+$", tag))])
     error_message = "The tag must contain only alphanumeric and '-', '_' characters"
   }
 }
@@ -67,7 +67,7 @@ variable "tags" {
 variable "agent_on" {
   description = "Whether to enable QEMU agent on VMs"
   type        = bool
-  default     = false  
+  default     = false
 }
 
 variable "node" {
@@ -110,9 +110,9 @@ variable "base" {
 variable "network" {
   description = "Network configuration information"
   type = object({
-    cidr          = string
-    dns           = list(string)
-    domain        = string
+    cidr   = string
+    dns    = list(string)
+    domain = string
 
     acls = list(object({
       cidr   = string
@@ -139,6 +139,6 @@ variable "disks" {
       size    = number
     }))
   })
-  nullable  = false
+  nullable = false
 }
 

@@ -23,7 +23,7 @@ module "vm_pools" {
       name        = "redis-ha"
       vms_name    = "redis-srv"
       description = "Redis HA VMs pool"
-      tags        = [ "redis", "production", ]
+      tags        = ["redis", "production", ]
       start_id    = 100
       size        = 3
 
@@ -42,7 +42,7 @@ module "vm_pools" {
       name        = "mongo-ha"
       vms_name    = "mongo-srv"
       description = "Mongo cluster VMs pool"
-      tags        = [ "mongo", "production", ]
+      tags        = ["mongo", "production", ]
       start_id    = 103
       size        = 3
 
@@ -57,7 +57,7 @@ module "vm_pools" {
       ]
     }
   }
-  
+
   source = "./modules/pve_pool"
 
   name        = each.value.name
@@ -73,7 +73,7 @@ module "vm_pools" {
   auth = {
     user     = "user"
     pass     = "$5$AGuU1Ws8C18XnI1r$s.5V.LE6HS/242LDQKPcROjfRkH1cpHNnDG7v/T/EkD"
-    ssh_keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK0yO9RABzbP4OhuNYjjAo+xtwyVUHsg9sbIQxhYIFMp" ]
+    ssh_keys = ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK0yO9RABzbP4OhuNYjjAo+xtwyVUHsg9sbIQxhYIFMp"]
   }
 
   resources = {
@@ -90,7 +90,7 @@ module "vm_pools" {
 
   network = {
     cidr   = "192.168.0.0/24"
-    dns    = [ "8.8.8.8" ]
+    dns    = ["8.8.8.8"]
     domain = "local"
     acls   = each.value.acls
   }
@@ -98,12 +98,12 @@ module "vm_pools" {
   disks = {
     root      = { storage = "SSD", size = 8 },
     cloudinit = { storage = "SSD" },
-    other     = [
+    other = [
       { storage = "SSD", size = 32, },
     ],
   }
 }
 
 output "about" {
-  value = { for name, vm in module.vm_pools: name => vm.about }
+  value = { for name, vm in module.vm_pools : name => vm.about }
 }

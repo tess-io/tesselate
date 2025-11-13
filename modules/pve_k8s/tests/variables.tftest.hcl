@@ -1,8 +1,8 @@
-mock_provider "proxmox" { }
+mock_provider "proxmox" {}
 
 variables {
   node = "test-node"
-  
+
   groups = {
     control = {
       size       = 2
@@ -11,13 +11,13 @@ variables {
 
       resources = {
         cpu    = 4
-        memory = 4 
+        memory = 4
       }
     }
 
     worker = {
-      size       = 2
-      node_name  = "worker-node"
+      size      = 2
+      node_name = "worker-node"
 
       resources = {
         cpu    = 4
@@ -36,7 +36,7 @@ variables {
   }
 
   cert = {
-    ca = <<-EOF
+    ca  = <<-EOF
       -----BEGIN CERTIFICATE-----
       MIIDPTCCAiWgAwIBAgIUK91HEwhoUgKwNn+wiCxCP5yPEBMwDQYJKoZIhvcNAQEL
       BQAwLjELMAkGA1UEBhMCUlUxDTALBgNVBAoMBFRlc3MxEDAOBgNVBAMMB3Rlc3Mu
@@ -106,17 +106,17 @@ run "validate_network_cidr_failed" {
     network = { cidr = null, dns = "dns.google.com", domain = "cluster.local", }
   }
 
-  expect_failures = [ var.network ]
+  expect_failures = [var.network]
 }
 
 run "validate_network_dns_failed" {
   command = plan
 
   variables {
-    network = { cidr = "192.168.0.1/24" , dns = null, domain = "cluster.local", }
+    network = { cidr = "192.168.0.1/24", dns = null, domain = "cluster.local", }
   }
 
-  expect_failures = [ var.network ]
+  expect_failures = [var.network]
 }
 
 run "validate_network_domain_failed" {
@@ -126,7 +126,7 @@ run "validate_network_domain_failed" {
     network = { cidr = "192.168.0.1/24", dns = "dns.google.com", domain = "", }
   }
 
-  expect_failures = [ var.network ]
+  expect_failures = [var.network]
 }
 
 run "validate_cert_incorrect_failed" {
@@ -138,6 +138,6 @@ run "validate_cert_incorrect_failed" {
       key = null
     }
   }
-  
-  expect_failures = [ var.cert ]
+
+  expect_failures = [var.cert]
 }
