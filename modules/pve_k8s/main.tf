@@ -93,6 +93,7 @@ resource "ansible_playbook" "control_init" {
 
   diff_mode = true
   verbosity = 1
+  replayable = false
 
   tags = [ "common", "init" ]
 
@@ -118,6 +119,7 @@ resource "ansible_playbook" "control_join" {
 
   diff_mode = true
   verbosity = 1
+  replayable = false
 
   tags = [ "common", "join" ]
 
@@ -145,6 +147,7 @@ resource "ansible_playbook" "workers" {
 
   diff_mode = true
   verbosity = 1
+  replayable = false
 
   extra_vars = {
     ansible_user          = var.auth.user
@@ -168,6 +171,7 @@ resource "ansible_playbook" "labels" {
 
   diff_mode = true
   verbosity = 1
+  replayable = false
 
   extra_vars = {
     ansible_user          = var.auth.user
