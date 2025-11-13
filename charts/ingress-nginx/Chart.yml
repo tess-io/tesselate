@@ -1,0 +1,13 @@
+apiVersion: v2
+name: ingress-nginx
+version: "0.1.0"
+appVersion: "1.14.2"
+description: |
+  K8S ingress controller which use NGINX as reverse proxy.
+maintainers:
+  - name: whereyourspace
+    email: whereyourspace@gmail.com
+    url: https://github.com/whereyourspace
+sources:
+  - https://github.com/tess-io/tesselate
+home: https://github.com/tess-io/tesselate
