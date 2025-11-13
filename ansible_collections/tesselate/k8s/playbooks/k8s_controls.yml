@@ -2,7 +2,7 @@
   hosts: all
   become: true
   roles:
-    - role: k8s_control
+    - role: tesselate.k8s.k8s_control
       vars:
         k8s_control_version: stable
         k8s_control_install_packages:

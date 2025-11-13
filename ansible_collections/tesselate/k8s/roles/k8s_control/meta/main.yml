@@ -1,6 +1,8 @@
 dependencies:
-  - role: k8s_common
+  - role: tesselate.k8s.k8s_common
     vars:
       k8s_common_version: '{{ k8s_control_version }}'
       k8s_common_install_packages: '{{ k8s_control_install_packages }}'
       k8s_common_disks: '{{ k8s_control_disks }}'
+    tags:
+      - common

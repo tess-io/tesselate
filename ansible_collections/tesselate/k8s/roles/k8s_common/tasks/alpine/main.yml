@@ -1,7 +1,7 @@
 - name: Copy make-shared script
   ansible.builtin.template:
     src: templates/make-shared.sh.j2
-    dest: /etc/local.d/make-shared.sh
+    dest: /etc/local.d/make-shared.start
     mode: '0755'
   vars:
     paths: '{{ disks | default([]) | map(attribute="mount") | list + addition_paths }}'
@@ -27,7 +27,3 @@
     name: local
     enabled: true
     state: started
-
-- name: Manually run make-shared.sh
-  ansible.builtin.command: /etc/local.d/make-shared.sh
-  changed_when: false

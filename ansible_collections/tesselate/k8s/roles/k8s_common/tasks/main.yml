@@ -52,6 +52,7 @@
         - bpftrace
       alpine-tools:
         - vim
+        - findmnt
       alpine-ansible-requirements:
         - py3-cryptography
 
