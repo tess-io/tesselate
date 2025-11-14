@@ -130,6 +130,7 @@ variable "disks" {
     root = object({
       storage = string
       size    = number
+      ssd     = optional(bool, false)
     }),
     cloudinit = object({
       storage = string
@@ -137,6 +138,7 @@ variable "disks" {
     other = list(object({
       storage = string
       size    = number
+      ssd     = optional(bool, false)
     }))
   })
   nullable = false
