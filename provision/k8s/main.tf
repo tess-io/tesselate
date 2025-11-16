@@ -40,7 +40,7 @@ resource "tls_private_key" "cert" {
 
 resource "tls_self_signed_cert" "cert" {
   private_key_pem       = tls_private_key.cert.private_key_pem
-  validity_period_hours = 24
+  validity_period_hours = 87600
 
   allowed_uses = [
     "any_extended",
