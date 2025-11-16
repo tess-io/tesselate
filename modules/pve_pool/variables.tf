@@ -53,6 +53,21 @@ variable "description" {
   default     = ""
 }
 
+variable "user_cloudinit" {
+  description = "User defined cloud-init config"
+  type = object({
+    path    = optional(string)
+    content = optional(string)
+  })
+  default  = {}
+  nullable = false
+
+  validation {
+    condition     = var.user_cloudinit.path == null || fileexists(var.user_cloudinit.path)
+    error_message = "path must be readable"
+  }
+}
+
 variable "tags" {
   description = "VMs tags"
   type        = list(string)
