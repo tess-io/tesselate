@@ -4,7 +4,7 @@ write_files:
     content: |
       ${indent(6, ssh_key)}
     owner: root:root
-    chmod: "0700"
+    permissions: "0600"
   - path: /tmp/cloud.key.pub
     content: |
       ${indent(6, ssh_key_pub)}
