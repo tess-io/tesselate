@@ -56,6 +56,26 @@ data "cloudinit_config" "cloudinit_pve" {
       agent_on      = var.agent_on
     })
   }
+
+  dynamic "part" {
+    for_each = var.user_cloudinit.path[*]
+
+    content {
+      content_type = "text/cloud-config"
+      filename     = "user-cloud-config-path-${part.key}.yml"
+      content      = file(part.value)
+    }
+  }
+
+  dynamic "part" {
+    for_each = var.user_cloudinit.content[*]
+
+    content {
+      content_type = "text/cloud-config"
+      filename     = "user-cloud-config-content-${part.key}.yml"
+      content      = part.value
+    }
+  }
 }
 
 resource "proxmox_virtual_environment_file" "cloudinit_pve" {
