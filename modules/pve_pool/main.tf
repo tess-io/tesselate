@@ -171,7 +171,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
     size         = var.disks.root.size
     discard      = "ignore"
     replicate    = false
-    ssd          = var.disks.root.ssd
+    ssd          = false
     backup       = false
     cache        = "none"
   }
