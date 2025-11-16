@@ -87,7 +87,7 @@ resource "proxmox_virtual_environment_pool" "pool" {
 }
 
 resource "proxmox_virtual_environment_cluster_firewall_security_group" "sc" {
-  name    = var.name
+  name    = lower(var.name)
   comment = "Custom traffic filtering rules for a pool ${var.name}"
 
   dynamic "rule" {
