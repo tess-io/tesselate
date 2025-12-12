@@ -1,0 +1,16 @@
+- name: Verify
+  hosts: all
+  tasks:
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+
+    - name: Check podman is installed  
+      ansible.builtin.assert:
+        that:
+          - '"podman" in ansible_facts.packages'
+        fail_msg: Podman package isn't installed
+        success_msg: Podman package is installed
+
+    - name: Search docker image
+      containers.podman.podman_search:
+        term: alpine:latest

@@ -43,6 +43,10 @@ locals {
         ]
       }
 
+      user_cloudinit = {
+        content = file("${path.module}/cloud-init/all.yml")
+      }
+
       pub_keys = tls_private_key.ssh.public_key_openssh[*]
 
       acls = [
@@ -62,7 +66,7 @@ locals {
       }
 
       user_cloudinit = {
-        content = templatefile("${path.module}/cloud-init/copy-ssh.yml.j2", {
+        content = templatefile("${path.module}/cloud-init/mgr.yml.j2", {
           ssh_key     = tls_private_key.ssh.private_key_openssh
           ssh_key_pub = tls_private_key.ssh.public_key_openssh
         })
@@ -86,6 +90,10 @@ locals {
           { storage = "SSD", size = 640, ssd = true },
           { storage = "HDD", size = 3072 },
         ]
+      }
+
+      user_cloudinit = {
+        path = "${path.module}/cloud-init/all.yml"
       }
 
       pub_keys = tls_private_key.ssh.public_key_openssh[*]

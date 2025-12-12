@@ -1,0 +1,22 @@
+namespace: tesselate
+name: linux
+version: 0.0.1
+
+description: |
+  The collection contains roles and playbooks to deploy
+  common software such as podman, docker, etc.
+
+readme: README.md
+license_file: LICENSE
+
+tags:
+  - linux
+  - podman
+  - containerd
+  - docker
+
+authors:
+  - whereyourspace <whereyourspace@gmail.com>
+
+repository: https://github.com/tess-io/tesselate
+issues: https://github.com/tess-io/tesselate/issues

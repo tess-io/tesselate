@@ -1,0 +1,83 @@
+argument_specs:
+  main:
+    short_description: Perform podman installation tasks
+    author: whereyourspace <whereyourspace@gmail.com>
+    version_added: '0.1'
+    options:
+      podman_version:
+        description:
+          - Package installation version
+        version_added: '0.1'
+        type: str
+        default: latest
+        required: false
+      podman_registires_conf:
+        description:
+          - Container registries configs
+        version_added: '0.1'
+        type: dict
+        options:
+          unqualified:
+            description:
+              - An array of host:[port] registries to try when pulling unqualified image in order
+            version_added: '0.1'
+            type: list
+            elements: str
+            default: []
+            required: false
+          registries:
+            description:
+              - An array of host:[port] registries
+            version_added: '0.1'
+            type: list
+            elements: dict
+            required: false
+            default: []
+            options:
+              name:
+                description:
+                  - Name of the [[registry]] table
+                version_added: '0.1'
+                type: str
+                required: false
+              prefix:
+                description:
+                  - Used to choose relevant [[registry]] table
+                version_added: '0.1'
+                type: str
+                required: false
+              location:
+                description:
+                  - The physical location of the "prefix"-rooted namespace
+                version_added: '0.1'
+                type: str
+                required: true
+              insecure:
+                description:
+                  - If true, unencrypted HTTP as well as TLS connections with untrusted certificates are allowed
+                version_added: '0.1'
+                type: bool
+                required: false
+                default: false
+              blocked:
+                description:
+                  - If true, pulling images with matchind names is forbidden
+                version_added: '0.1'
+                type: bool
+                required: false
+                default: false
+      podman_mounts_conf:
+        description:
+          - Container mounts configs
+        version_added: '0.1'
+        type: dict
+        options:
+          volumes:
+            description:
+              - An array of volume mount directories that are automatically mounted inside containers
+                when executing the podman run or podman build commands.
+            version_added: '0.1'
+            type: list
+            elements: str
+            default: []
+            required: false

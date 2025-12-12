@@ -8,3 +8,6 @@ write_files:
   - path: /tmp/cloud.key.pub
     content: |
       ${indent(6, ssh_key_pub)}
+
+chpasswd:
+  expire: False

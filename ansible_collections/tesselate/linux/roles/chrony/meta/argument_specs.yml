@@ -1,0 +1,257 @@
+argument_specs:
+  main:
+    short_description: Install chrony and configure it
+    version_added: '0.1'
+    author: whereyourspace <whereyourspace@gmail.com>
+    options:
+      chrony_server:
+        description:
+          - Specify NTP server options which can be used as a time server
+        version_added: '0.1'
+        type: list
+        elements: dict
+        required: false
+        options:
+          hostname:
+            description:
+              - Host domain name or IP address
+            version_added: '0.1'
+            type: str
+            required: true
+          minpoll:
+            description:
+              - The minimum interval between requests sent to the server as a power of 2 in seconds
+            version_added: '0.1'
+            type: int
+          maxpoll:
+            description:
+              - The maximum interval between requests sent to the server as a power of 2 in seconds
+            version_added: '0.1'
+            type: int
+          certset:
+            description:
+              - Specify which set of trusted certificates should by used to verify the server's certificate
+            version_added: '0.1'
+            type: str
+          prefer:
+            description:
+              - Prefer this source over other selectable sources without the O(prefer) option
+            version_added: '0.1'
+            type: bool
+          ipv4:
+            description:
+              - Use only IPv4 address for this source
+            version_added: '0.1'
+            type: bool
+          ipv6:
+            description:
+              - Use only IPv6 address for this source
+            version_added: '0.1'
+            type: bool
+      chrony_pool:
+        description:
+          - Specify the parameters of the NTP server pool
+        version_added: '0.1'
+        type: list
+        elements: dict
+        options:
+          hostname:
+            description:
+              - Host domain name or IP address
+            version_added: '0.1'
+            type: str
+            required: true
+          minpoll:
+            description:
+              - The minimum interval between requests sent to the server as a power of 2 in seconds
+            version_added: '0.1'
+            type: int
+          maxpoll:
+            description:
+              - The maximum interval between requests sent to the server as a power of 2 in seconds
+            version_added: '0.1'
+            type: int
+          certset:
+            description:
+              - Specify which set of trusted certificates should by used to verify the server's certificate
+            version_added: '0.1'
+            type: str
+          prefer:
+            description:
+              - Prefer this source over other selectable sources without the O(prefer) option
+            version_added: '0.1'
+            type: bool
+          ipv4:
+            description:
+              - Use only IPv4 address for this source
+            version_added: '0.1'
+            type: bool
+          ipv6:
+            description:
+              - Use only IPv6 address for this source
+            version_added: '0.1'
+            type: bool
+          maxsources:
+            description:
+              - The desired number of sources to be used from the pool
+            version_added: '0.1'
+            type: int
+      chrony_manual:
+        description:
+          - Enable support at run-time for the V(settime) command in chronyc
+        version_added: '0.1'
+        type: bool
+      chrony_ntsaeads:
+        description:
+          - Specify a list of IDDs of Authenticated Encryption with Associated Data (AEAD) algoritmhs
+            enabled for NTS authentication of NTP messages
+        version_added: '0.1'
+        type: str
+        choices:
+          - 15
+          - 30
+      chrony_ntsdumpdir:
+        description:
+          - Specify a directory for the client to save NTS cookies it received from the server in order
+            to avoid making making an NTS-KE request when chronyd is started again
+        version_added: '0.1'
+        type: str
+      chrony_ntsrefresh:
+        description:
+          - Specify the maximum interval between NTS-KE handshakes (in seconds) in order to refresh
+            the keys authenticating NTP packets
+        version_added: '0.1'
+        type: int
+      chrony_ntstrustedcerts:
+        description:
+          - Specify a file or directory containing trusted certificates (in the PEM format) that are needed
+            to verify certificates of NTS-KE servers, e.g. certificates of trusted certificate authorities (CA)
+            or self-signed certificates of the servers
+        version_added: '0.1'
+        type: list
+        elements: dict
+        options:
+          setid:
+            description:
+              - Select the set of certificates where certificates from the specified file or directory are added
+            version_added: '0.1'
+            type: int
+          path:
+            description:
+              - Path to a file or directory containing trusted certificate
+            version_added: '0.1'
+            type: str
+      chrony_minsamples:
+        description:
+          - Set the default minimum number of samples that chronyd should keep for each sources
+        version_added: '0.1'
+        type: int
+      chrony_maxsamples:
+        description:
+          - Set the default maximum number of samples that chronyd should keep for each sources
+        version_added: '0.1'
+        type: int
+      chrony_authselectmode:
+        description:
+          - Determiny the default selection options for authenticated and unathenticated sources in order to simplify
+            the configuration with the configuration file and chronyc commands
+        version_added: '0.1'
+        type: str
+        choices:
+          - require
+          - prefer
+          - mix
+          - ignore
+      chrony_allow:
+        description:
+          - Specify a particular subnet from which NTP clients are allowed to access the compuer as an NTP server
+        version_added: '0.1'
+        type: list
+        elements: dict
+        options:
+          all:
+            description:
+              - Override the effects of any previous directive relating to a subnet within the specified subnet
+            version_added: '0.1'
+            type: bool
+          subnet:
+            description:
+              - The subnet to which the rule applies
+            version_added: '0.1'
+            type: str
+      chrony_deny:
+        description:
+          - Specify a particular subnet from which NTP clients are denied to access the compuer as an NTP server
+        version_added: '0.1'
+        type: list
+        elements: dict
+        options:
+          all:
+            description:
+              - Override the effects of any previous directive relating to a subnet within the specified subnet
+            version_added: '0.1'
+            type: bool
+          subnet:
+            description:
+              - The subnet to which the rule applies
+            version_added: '0.1'
+            type: str
+      chrony_clientloglimit:
+        description:
+          - This directive specify the maximum amount of memory that chronyd is allowed to allocate for logging
+            of client accesses and the state that chronyd as an NTP server needs to support the interleaved mode
+            for its clients
+        version_added: '0.1'
+        type: int
+      chrony_log:
+        description:
+          - Specify which information will be logged
+        version_added: '0.1'
+        type: dict
+        options:
+          rawmeasurements:
+            description:
+              - Logs the raw NTP measurements and releated information to a file called V(measurement.log)
+            version_added: '0.1'
+            type: bool
+          measurements:
+            description:
+              - Logs the NTP valid measurements, i.e that passed the RFS 5905 tests 1 thgough 7
+            version_added: '0.1'
+            type: bool
+          statistics:
+            description:
+              - Logs infromation about the regression processing to a file called V(statistics.log)
+            version_added: '0.1'
+            type: bool
+          selection:
+            description:
+              - Logs information about selection of sources for synchronisation to a file called V(selection.log)
+            version_added: '0.1'
+            type: bool
+          tracking:
+            description:
+              - Logs changes to the estimate of the system's gain or loss rate, and any slews made, to a file
+                called V(tracking.log)
+            version_added: '0.1'
+            type: bool
+          rtc:
+            description:
+              - Logs information about the system's real-time clock to a file called V(rtc.log)
+            version_added: '0.1'
+            type: bool
+          refclock:
+            description:
+              - Logs the raw and filtered reference clock measurements to a file called V(refclocks.log)
+            version_added: '0.1'
+            type: bool
+          tempcomp:
+            description:
+              - Logs the temperature measurements and system rate compensations to a file called V(tempcomp.log)
+            version_added: '0.1'
+            type: bool
+      chrony_logdir:
+        description:
+          - Specify the directory for writing log files enabled by the O(log) directive
+        version_added: '0.1'
+        type: str

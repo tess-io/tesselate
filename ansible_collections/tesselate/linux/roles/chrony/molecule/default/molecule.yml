@@ -1,0 +1,7 @@
+---
+driver:
+  name: podman
+
+platforms:
+  - name: alpine
+    image: docker.io/python:alpine

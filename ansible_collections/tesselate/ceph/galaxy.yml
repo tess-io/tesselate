@@ -1,0 +1,20 @@
+namespace: tesselate
+name: ceph
+version: 0.0.1
+
+description: |
+  The collection container everything you need to deploy Ceph
+  in an infrastructure based on bare metal or virtual machines
+
+readme: README.md
+license_file: LICENSE
+
+tags:
+  - cephadm
+  - ceph
+
+authors:
+  - whereyourspace <whereyourspace@gmail.com>
+
+repository: https://github.com/tess-io/tesselate
+issues: https://github.com/tess-io/tesselate/issues

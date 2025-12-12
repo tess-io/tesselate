@@ -1,0 +1,5 @@
+{% for server in chrony_server %}
+{# server {{ server | dict2items | rejectattr("value", "boolean") | map("tesselate.helpers.format",  }} {{ server | dict2items | selectattr("value", "boolean") | map(attribute="key") | join(" ") }} #}
+server {{ server.hostname | tesselate.helpers.upper }}
+{% endfor %}
+

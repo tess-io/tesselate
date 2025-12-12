@@ -1,0 +1,33 @@
+driver:
+  name: podman
+  options:
+    managed: true
+
+provisioner:
+  name: ansible
+  inventory:
+    group_vars:
+      all:
+        podman_version: latest
+        podman_registries_conf:
+          unqualified:
+            - docker.io
+          registries:
+            - insecure: true
+              blocked: true
+              location: localhost:5000
+
+platforms:
+  - name: redhat-instance
+    image: quay.io/centos/centos:latest
+    pre_build_image: true
+  - name: debian-instance
+    image: docker.io/python:bookworm
+    pre_build_image: true
+  - name: alpine-instance
+    image: docker.io/python:alpine
+    pre_build_image: true
+    command:
+      - /bin/sh
+      - -c
+      - trap exit SIGTERM SIGQUIT SIGINT; while :; do sleep 1; done
