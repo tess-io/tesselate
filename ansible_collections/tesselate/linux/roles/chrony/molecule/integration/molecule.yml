@@ -3,7 +3,7 @@ driver:
   name: podman
 
 platforms:
-  - name: alpine
+  - name: render-alpine
     image: docker.io/python:alpine
 
 provisioner:

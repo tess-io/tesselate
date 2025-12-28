@@ -13,8 +13,12 @@ def extract(map, keys):
     return { key : value for key, value in map.items() if key in keys }
 
 
-def format(str, map):
+def format(map, str):
     return to_text(str.format(**map))
+
+
+def to_dict(obj, key, attrs={}):
+    return { key: obj } | attrs
 
 
 class FilterModule:
@@ -22,4 +26,5 @@ class FilterModule:
         return {
             'extract': extract,
             'format': format,
+            'to_dict': to_dict,
         }

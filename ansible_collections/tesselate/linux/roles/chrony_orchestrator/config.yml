@@ -2,7 +2,7 @@ dependency:
   name: galaxy
   options:
     requirements-file: molecule/requirements.yml
-    role-file: molecule/requirements.yml
+    collections-file: molecule/requirements.yml
 
 scenario:
   test_sequence:

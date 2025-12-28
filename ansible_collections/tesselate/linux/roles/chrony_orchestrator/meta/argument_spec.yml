@@ -1,0 +1,52 @@
+argument_specs:
+  main:
+    short_description: Install chrony on all available hosts or a group of hosts 
+    version_added: 0.0.1
+    author: whereyourspace <whereyourspace@gmail.com>
+    options:
+      chrony_orchestrator_server_groups:
+        description:
+          - A group of nodes that will be NTP servers
+        version_added: 0.0.1
+        type: list
+        elements: str
+        default:
+          - ntp_servers
+      
+      chrony_orchestrator_client_groups:
+        description:
+          - A group of nodes that will be configured as NTP clients
+        version_added: 0.0.1
+        type: list
+        elements: str
+        default:
+          - ntp_clients
+
+      chrony_orchestrator_count:
+        description:
+          - Count of nodes that will be NTP servers
+        version_added: 0.0.1
+        type: number
+        default: 1
+      
+      chrony_orchestrator_public_pool:
+        description:
+          - Setting up external pool
+        vearsion_added: 0.0.1
+        type: dict
+        default:
+          enable: false
+          pool: pool.ntp.org
+        options:
+          enable:
+            description:
+              - Enable(V(true)) or disable(V(false)) the external poool
+            version_added: 0.0.1
+            type: bool
+            default: false
+          pool:
+            description:
+              - Address of the external pool
+            version_added: 0.0.1
+            type: str
+            default: pool.ntp.org

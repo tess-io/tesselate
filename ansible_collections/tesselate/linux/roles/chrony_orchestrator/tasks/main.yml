@@ -1,0 +1,53 @@
+- name: Validate inventory
+  run_once: true
+  ansible.builtin.assert:
+    that:
+      - (groups | dict2items | map(attribute='key') | intersect(chrony_orchestrator_server_groups) | length) == (chrony_orchestrator_server_groups | length)
+      - (groups | dict2items | map(attribute='key') | intersect(chrony_orchestrator_client_groups) | length) == (chrony_orchestrator_client_groups | length)
+    fail_msg: All groups must exist in inventory
+
+- name: Configure vars
+  ansible.builtin.include_vars: vars/hosts.yml
+
+- name: Configure server nodes
+  ansible.builtin.include_role:
+    name: tesselate.linux.chrony
+  when: group_names | select('in', chrony_orchestrator_servers) | length > 0
+  vars:
+    chrony_conf:
+      server: '{{ chrony_orchestrator_sservers | reject("eq", inventory_hostname) | map("tesselate.helpers.to_dict", "hostname") | slice(chrony_orchestrator_count) | first }}'
+      rtcsync: true
+      driftfile: /var/lib/chrony/drift
+      makestep:
+        threshold: 3600
+        limit: 1
+      logdir: /var/log/chrony
+
+- name: Configure client nodes with server nodes
+  ansible.builtin.include_role: 
+    name: tesselate.linux.chrony
+  when: (group_names | select('in', chrony_orchestrator_clients) | length > 0) and not chrony_orchestrator_public_pool.enable
+  vars:
+    chrony_conf:
+      server: '{{ chrony_orchestrator_cservers | map("tesselate.helpers.to_dict", "hostname") }}'
+      rtcsync: true
+      makestep:
+        threshold: 3600
+        limit: 1
+      driftfile: /var/lib/chrony/drift
+      logdir: /var/log/chrony
+
+- name: Configure client nodes with public pool
+  ansible.builtin.include_role:
+    name: tesselate.linux.chrony
+  when: (group_names | select('in', chrony_orchestrator_clients) | length > 0) and chrony_orchestrator_public_pool.enable
+  vars:
+    chrony_conf:
+      server: 
+        hostname: '{{ chrony_orchestrator_public_pool.pool }}'
+        rtcsync: true
+        makestep:
+          threshold: 3600
+          limit: 1
+        driftfile: /var/lib/chrony/drift
+        logdir: /var/log/chrony

@@ -1,0 +1,11 @@
+chrony_orchestrator_server_groups:
+  - ntp_servers
+
+chrony_orchestrator_client_groups:
+  - ntp_clients
+
+chrony_orchestrator_count: 1
+
+chrony_orchestrator_public_pool:
+  enable: false
+  pool: pool.ntp.org

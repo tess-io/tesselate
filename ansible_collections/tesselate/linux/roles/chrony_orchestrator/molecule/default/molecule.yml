@@ -1,0 +1,32 @@
+driver:
+  name: podman
+
+provisioner:
+  name: ansible
+  inventory:
+    group_vars:
+      all:
+        chrony_orchestrator_count: 2
+  env:
+    ANSIBLE_COLLECTIONS_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../../../../../ansible_collections
+
+platforms:
+  - name: ntp-server-1
+    image: docker.io/python:bookworm
+    pre_build_image: true
+    groups:
+      - ntp_servers
+  - name: ntp-server-2
+    image: docker.io/python:bookworm
+    pre_build_image: true
+    groups:
+      - ntp_servers
+  - name: ntp-client-1
+    image: docker.io/python:alpine
+    pre_build_image: true
+    groups:
+      - ntp_clients
+    command:
+      - /bin/sh
+      - -c
+      - trap exit SIGTERM SIGQUIT SIGINT; while :; do sleep 1; done

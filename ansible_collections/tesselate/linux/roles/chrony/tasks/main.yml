@@ -3,8 +3,25 @@
     name: chrony
     state: present
 
-- name: Generate chrony.conf
-  ansible.builtin.template:
-    src: templates/chrony.conf.j2
-    dest: /etc/chrony/chrony.conf
-    mode: '0664'
+- name: Prepare system
+  block:
+    - name: Create log directory
+      ansible.builtin.file:
+        dest: chrony_conf.logdir
+        state: directory
+        mode: '0750'
+      when: chrony_conf.logdir is defined
+
+    - name: Create drift directory
+      ansible.builtin.file:
+        dest: '{{ chrony_conf.driftfile | basename }}'
+        state: directory
+        mode: '0750'
+      when: chrony_conf.driftfile is defined
+
+    - name: Generate chrony.conf
+      ansible.builtin.template:
+        src: templates/chrony.conf.j2
+        dest: /etc/chrony/chrony.conf
+        mode: '0664'
+  when: chrony_conf is defined

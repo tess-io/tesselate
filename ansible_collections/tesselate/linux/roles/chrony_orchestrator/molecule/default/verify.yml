@@ -1,0 +1,29 @@
+- name: Verify servers
+  hosts: ntp_servers
+  tasks:
+    - name: Read chrony configuration file
+      ansible.builtin.slurp:
+        src: /etc/chrony/chrony.conf
+      register: chrony_conf
+
+    - name: Verify servers count
+      ansible.builtin.assert:
+        that:
+          - content | select('contains', 'server ') | length == 1
+      vars:
+        content: "{{ chrony_conf['content'] | b64decode | split('\n') }}"
+  
+- name: Verify clients
+  hosts: ntp_clients
+  tasks:
+    - name: Read chrony configuration file
+      ansible.builtin.slurp:
+        src: /etc/chrony/chrony.conf
+      register: chrony_conf
+
+    - name: Verifiy clients count
+      ansible.builtin.assert:
+        that:
+          - content | select('contains', 'server ') | length == 2
+      vars:
+        content: "{{ chrony_conf['content'] | b64decode | split('\n') }}"
