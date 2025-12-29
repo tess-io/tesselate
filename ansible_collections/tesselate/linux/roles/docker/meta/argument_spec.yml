@@ -1,0 +1,97 @@
+argument_spec:
+  main:
+    short_description: The role entrypoint for installing docker on nodes and configuring it
+    version_added: 0.0.1
+    author: whereyourspace <whereyourspace@gmail.com>
+    options:
+      docker_proxies:
+        description:
+          - Proxy server endpoint configs
+        version_added: 0.0.1
+        type: dict
+        default: {}
+        options:
+          http-proxy:
+            description:
+              - HTTP proxy server endpoint
+            version_added: 0.0.1
+            type: str
+          https-proxy:
+            description:
+              - HTTPS proxy server endpoint
+            version_added: 0.0.1
+            type: str
+          no-proxy:
+            description:
+              - Registries that will not use a proxy
+            version_added: 0.0.1
+            type: list
+            elements: str
+      docker_insecure_registries:
+        description:
+          - Registries for which insecRoot directory of persistent Docker state ured connections are allowed
+        version_added: 0.0.1
+        type: list
+        elements: str
+      docker_tls:
+        description:
+          - Docker TLS configurations
+        version_added: 0.0.1
+        type: dict
+        default:
+          enable: false
+        options:
+          enable:
+            description:
+              - Enable(V(true)) or disable(V(false)) TLS. Implied by O(tlsverify)
+            version_added: 0.0.1
+            type: bool
+          cacert:
+            description:
+              - Trust certs signed only by this CA
+            version_added: 0.0.1
+            type: str
+          cert:
+            description:
+              - Path to TLS certificate file
+            version_added: 0.0.1
+            type: str
+          key:
+            description:
+              - Path to TLS key file
+            version_added: 0.0.1
+            type: str
+          verify:
+            description:
+              - Use TLS and verify the remote
+            version_added: 0.0.1
+            type: bool
+      docker_logs:
+        description:
+          - Configuration of container logs
+        version_added: 0.0.1
+        type: dict
+        default:
+          driver: json-file
+          opts: {}
+        options:
+          driver:
+            description:
+              - Default driver for container logs
+            version_added: 0.0.1
+            type: str
+            choices:
+              - json-file
+              - local
+          opts:
+            description:
+              - Default log driver options for containers
+            version_added: 0.0.1
+            type: dict
+            default: {}
+      docker_data_root:
+        description:
+          - Root directory of persistent Docker state 
+        version_added: 0.0.1
+        type: str
+        default: /var/lib/docker

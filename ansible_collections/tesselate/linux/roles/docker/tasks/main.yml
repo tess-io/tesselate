@@ -1,0 +1,21 @@
+- name: Run OS specific tasks
+  ansible.builtin.import_tasks: 'tasks/prepare/{{ ansible_facts["os_family"] }}.yml'
+
+- name: Include OS specific vars
+  ansible.builtin.include_vars: 'vars/{{ ansible_facts["os_family"] }}.yml'
+
+- name: Install packages
+  ansible.builtin.package:
+    name: '{{ docker_packages }}'
+
+- name: Configure dockerd service
+  ansible.builtin.template:
+    src: templates/daemon.json.j2
+    dest: /etc/docker/daemon.json
+    mode: '0644'
+
+- name: Enable and run dockerd service
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
