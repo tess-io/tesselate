@@ -52,7 +52,16 @@ provision/**/*.dot
 
 # Python environments
 **/.venv/
+**/__pycache__/
+**/tests/output/
 
 # Ansible directory
-
 **/.ansible/
+
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# pre-commit
+.pre-commit-config.yaml

@@ -1,0 +1,34 @@
+{% macro dict_directive(name, option, positional=[ ]) %}
+{% if option is not none %}
+
+{%- set pos = option | dict2items | selectattr("key", "in", positional) %}
+{%- set pos_bool = pos | selectattr("value", "boolean") | map("tesselate.helpers.format", "{key}") | join(" ") %}
+{%- set pos_non_bool = pos | rejectattr("value", "boolean") | map("tesselate.helpers.format", "{value}") | join(" ") %}
+
+{%- set non_pos = option | dict2items | rejectattr("key", "in", positional) %}
+{%- set non_pos_bool = non_pos | selectattr("value", "boolean") | map("tesselate.helpers.format", "{key}") | join(" ") %}
+{%- set non_pos_non_bool = non_pos | rejectattr("value", "boolean") | map("tesselate.helpers.format", "{key} {value}") | join(" ") -%}
+
+{{ name }} {{ [ pos_bool, pos_non_bool, non_pos_bool, non_pos_non_bool ] | reject("tesselate.helpers.empty") | join(" ") }}
+{% endif %}
+{% endmacro %}
+
+{% macro dicts_directive(name, option, positional=[ ]) %}
+{% if option is not none %}
+{%- for dir in option %}
+{{ dict_directive(name, dir, positional) }}
+{%- endfor %}
+
+{% endif %}
+{% endmacro %}
+
+{% macro directive(name, option) %}
+{% if option is not none %}
+{% if option is boolean and option %}
+{{ name }}
+{% else %}
+{{ name }} {{ option }}
+{% endif %}
+
+{% endif %}
+{% endmacro %}

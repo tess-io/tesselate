@@ -1,0 +1,11 @@
+---
+driver:
+  name: podman
+
+platforms:
+  - name: render-alpine
+    image: docker.io/python:alpine
+
+provisioner:
+  env:
+    ANSIBLE_COLLECTIONS_PATH: ${MOLECULE_PROJECT_DIRECTORY}/../../../../../ansible_collections

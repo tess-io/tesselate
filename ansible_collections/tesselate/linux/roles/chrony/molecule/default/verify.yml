@@ -1,0 +1,46 @@
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+    
+    - name: Verify package is installed
+      ansible.builtin.assert:
+        that:
+          - '"chrony" in ansible_facts.packages'
+
+    - name: Read file content
+      ansible.builtin.slurp:
+        src: /etc/chrony/chrony.conf
+      register: actual_file
+
+    - name: Verify chrony.conf
+      ansible.builtin.assert:
+        that:
+          - actual_content == expected_content
+        fail_msg: |
+          Files content missmatch.
+          Expected:
+          {{ expected_content }}
+
+          Actual:
+          {{ actual_content }}
+
+      vars:
+        actual_content: '{{ actual_file.content | b64decode | trim }}'
+        expected_content: '{{ expected_data | trim }}'
+        expected_data: |
+          server example.com prefer minpoll 1
+
+          pool example.com prefer minpoll 1
+          
+          deny 192.168.24.0/24
+
+          allow all 192.168.0.0/16
+
+          manual
+
+          logdir /var/log/chrony
+
+          log rawmeasurements measurements

@@ -1,0 +1,4 @@
+- name: Converge role
+  hosts: all
+  roles:
+    - role: tesselate.linux.podman

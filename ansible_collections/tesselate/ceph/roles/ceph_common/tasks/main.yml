@@ -1,0 +1,3 @@
+- name: Install package requirements
+  ansible.builtin.package:
+    - python3

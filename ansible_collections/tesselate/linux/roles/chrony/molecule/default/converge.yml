@@ -1,0 +1,26 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: false
+  roles:
+    - role: tesselate.linux.chrony
+      vars:
+        chrony_conf:
+          server:
+            - hostname: example.com
+              minpoll: 1
+              prefer: true
+          pool:
+            - hostname: example.com
+              minpoll: 1
+              prefer: true
+          allow:
+            - all: true
+              subnet: "192.168.0.0/16"
+          deny:
+            - subnet: "192.168.24.0/24"
+          log:
+            rawmeasurements: true
+            measurements: true
+          manual: true
+          logdir: /var/log/chrony

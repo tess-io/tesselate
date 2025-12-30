@@ -1,0 +1,4 @@
+dependencies:
+  - role: tesselate.linux.podman
+    vars:
+      podman_version: latest

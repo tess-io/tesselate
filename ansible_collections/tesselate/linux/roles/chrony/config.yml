@@ -1,0 +1,13 @@
+dependency:
+  name: galaxy
+  options:
+    requirements-file: molecule/requirements.yml
+    role-file: molecule/requirements.yml
+
+scenario:
+  test_sequence:
+    - dependency
+    - create
+    - converge
+    - verify
+    - destroy
