@@ -13,9 +13,10 @@
     src: templates/daemon.json.j2
     dest: /etc/docker/daemon.json
     mode: '0644'
+  notify:
+    - Restart dockerd
 
-- name: Enable and run dockerd service
+- name: Enable dockerd service
   ansible.builtin.service:
     name: docker
-    state: started
     enabled: true
