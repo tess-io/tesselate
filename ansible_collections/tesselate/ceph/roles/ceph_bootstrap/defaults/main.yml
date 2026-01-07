@@ -1,0 +1,6 @@
+ceph_bootstrap_monitoring:
+  deploy_stack: false
+  enable: false
+
+ceph_bootstrap_dashboard_user: admin
+ceph_bootstrap_dashboard_password: Qwerty1234!

@@ -4,6 +4,24 @@ argument_spec:
     version_added: 0.0.1
     author: whereyourspace <whereyourspace@gmail.com>
     options:
+      docker_disk:
+        description:
+          - Configure disk for docker data
+        version_added: 0.0.1
+        type: dict
+        options:
+          path:
+            description:
+              - Path to disk on system
+            version_added: 0.0.1
+            type: str
+            required: true
+          fs: 
+            description:
+              - Filesystem type
+            version_added: 0.0.1
+            type: str
+          
       docker_proxies:
         description:
           - Proxy server endpoint configs
