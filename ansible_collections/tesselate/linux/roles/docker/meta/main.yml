@@ -1,0 +1,7 @@
+galaxy_info:
+  description: The role for installing docker on nodes and configuring it
+  author: whereyourspace <whereyourspace@gmail.com>
+  license: MIT
+  min_ansible_version: '2.18'
+  platforms:
+    - name: Debian

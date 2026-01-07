@@ -2,14 +2,13 @@ argument_specs:
   main:
     short_description: Perform base node setup tasks
     author: whereyourspace <whereyourspace@gmail.com>
-    version_added: '0.1'
+    version_added: 0.0.1
     options:
       k8s_common_version:
         description:
           - The version of the installed K8S
         type: str
-        version_added: '0.1'
-        required: false
+        version_added: 0.0.1
         default: stable
       k8s_common_install_packages:
         description:
@@ -19,16 +18,14 @@ argument_specs:
           - The value of V(prof) is for installing packages used for
             system status profiling
         type: list
-        version_added: '0.1'
-        required: false
+        version_added: 0.0.1
         default: []
       k8s_common_disks:
         description:
           - The list of disks on which the file systems will be
             created and mounted to the system
         type: list
-        version_added: '0.1'
-        required: false
+        version_added: 0.0.1
         default: []
         elements: dict
         options:
@@ -36,13 +33,13 @@ argument_specs:
             description:
               - Path to disk
             type: str
-            version_added: '0.1'
+            version_added: 0.0.1
             required: true
           fs:
             description:
               - File system type
             type: str
-            version_added: '0.1'
+            version_added: 0.0.1
             required: true
             choices:
               - ext4
@@ -50,13 +47,12 @@ argument_specs:
             description:
               - File system mount path
             type: str
-            version_added: '0.1'
+            version_added: 0.0.1
             required: true
           role:
             description:
               - Disk designation
             type: str
-            version_added: '0.1'
-            required: false
+            version_added: 0.0.1
             choices:
               - data

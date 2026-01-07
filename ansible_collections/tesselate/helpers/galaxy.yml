@@ -1,0 +1,16 @@
+namespace: tesselate
+name: helpers
+version: 0.0.1
+
+description: |
+  This collection contains custom plugins and some other ansible
+  objects that can be used anywhere.
+
+readme: README.md
+license_file: LICENSE
+
+authors:
+  - whereyourspace <whereyourspace@gmail.com>
+
+repository: https://github.com/tess-io/tesselate
+issues: https://github.com/tess-io/tesselate/issues

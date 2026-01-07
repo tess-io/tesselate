@@ -1,0 +1,13 @@
+unqualified-search-registries={{ podman_registries_conf.unqualified | default([]) | to_json }}
+
+{% for registry in (podman_registries_conf.registries | default([])) %}
+[[registry{{ "name" in registry | ternary("." + (registry.name | default(omit)), "") }}]]
+insecure = {{ registry.insecure | default(false) | ternary("true", "false") }}
+blocked = {{ registry.blocked | default(false) | ternary("true", "false") }}
+
+{% if (registry.prefix is defined) %}
+prefix = "{{ registry.prefix }}"
+{% endif %}
+
+location = "{{ registry.location | mandatory }}"
+{% endfor %}

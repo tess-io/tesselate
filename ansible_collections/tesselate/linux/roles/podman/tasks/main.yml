@@ -1,0 +1,31 @@
+- name: Install podman package
+  ansible.builtin.package:
+    name: 'podman{{ suffix[ansible_facts.os_family | lower] }}'
+    state: present
+  vars:
+    suffix:
+      alpine: '{{ (podman_version != "latest") | ternary("=" + podman_version, "") }}'
+      debian: '{{ (podman_version != "latest") | ternary("=" + podman_version, "") }}'
+      redhat: '{{ (podman_version != "latest") | ternary("-" + podman_version, "") }}'
+
+- name: Create containers directory
+  ansible.builtin.file:
+    path: /etc/containers
+    state: directory
+    mode: '0664'
+
+- name: Generate mounts.conf
+  ansible.builtin.template:
+    src: templates/mounts.conf.j2
+    dest: /etc/containers/mounts.conf
+    mode: '0664'
+  vars:
+    volumes: '{{ podman_mounts_conf.volumes }}'
+  when: podman_mounts_conf is defined
+
+- name: Generate registries.conf
+  ansible.builtin.template:
+    src: templates/registries.conf.j2
+    dest: /etc/containers/registries.conf
+    mode: '0664'
+  when: podman_registries_conf is defined

@@ -1,0 +1,39 @@
+- name: Run OS specific tasks
+  ansible.builtin.include_tasks: 'tasks/prepare/{{ ansible_facts["os_family"] | lower }}.yml'
+
+- name: Include OS specific vars
+  ansible.builtin.include_vars: 'vars/{{ ansible_facts["os_family"] | lower }}.yml'
+
+- name: Install packages
+  ansible.builtin.package:
+    name: '{{ docker_packages }}'
+
+- name: Configure docker usage disk
+  block:
+    - name: Configure FS
+      community.general.filesystem:
+        dev: '{{ docker_disk.path }}'
+        fstype: '{{ docker_disk.fs }}'
+      notify:
+        - Restart dockerd
+
+    - name: Configure mounts
+      ansible.posix.mount:
+        src: '{{ docker_disk.path }}'
+        path: '{{ docker_data_root }}'
+        fstype: '{{ docker_disk.fs }}'
+        state: mounted
+  when: docker_disk is defined
+
+- name: Configure dockerd service
+  ansible.builtin.template:
+    src: templates/daemon.json.j2
+    dest: /etc/docker/daemon.json
+    mode: '0644'
+  notify:
+    - Restart dockerd
+
+- name: Enable dockerd service
+  ansible.builtin.service:
+    name: docker
+    enabled: true

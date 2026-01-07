@@ -1,0 +1,40 @@
+{% import "helpers.j2" as helpers %}
+{{- helpers.dicts_directive("server", chrony_conf.server | default(None), [ "hostname" ]) -}}
+
+{{- helpers.dicts_directive("pool", chrony_conf.pool | default(None), [ "hostname" ]) -}}
+
+{{- helpers.dicts_directive("ntstrustedcerts", chrony_conf.ntstrustedcerts | default(None), [ "setid", "path" ]) -}}
+
+{{- helpers.dicts_directive("deny", chrony_conf.deny | default(None), [ "all", "subnet" ]) -}}
+
+{{- helpers.dicts_directive("allow", chrony_conf.allow | default(None), [ "all", "subnet" ]) -}}
+
+{{- helpers.dict_directive("local", chrony_conf.local | default(None)) -}}
+
+{{- helpers.directive("rtcfile", chrony_conf.rtcfile | default(None)) -}}
+
+{{- helpers.directive("rtcsync", chrony_conf.rtcsync | default(None)) -}}
+
+{{- helpers.dict_directive("makestep", chrony_conf.makestep | default(None), [ "threshold", "limit" ]) -}}
+
+{{- helpers.directive("driftfile", chrony_conf.driftfile | default(None)) -}}
+
+{{- helpers.directive("manual", chrony_conf.manual | default(None)) }}
+
+{{- helpers.directive("ntsaeads", chrony_conf.ntsaeads | default(None)) -}}
+
+{{- helpers.directive("ntsdumpdir", chrony_conf.ntsdumpdir | default(None)) -}}
+
+{{- helpers.directive("ntsrefresh", chrony_conf.ntsrefresh | default(None)) -}}
+
+{{- helpers.directive("minsamples", chrony_conf.minsamples | default(None)) -}}
+
+{{- helpers.directive("maxsamples", chrony_conf.maxsamples | default(None)) -}}
+
+{{- helpers.directive("authselectmode", chrony_conf.authselectmode | default(None)) -}}
+
+{{- helpers.directive("clientloglimit", chrony_conf.clientloglimit | default(None)) -}}
+
+{{- helpers.directive("logdir", chrony_conf.logdir | default(None)) -}}
+
+{{- helpers.dict_directive("log", chrony_conf.log | default(None)) -}}
